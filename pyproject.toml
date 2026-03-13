@@ -1,0 +1,14 @@
+[project]
+name = "llm4s2t"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.9"
+dependencies = [
+    "asyncio>=4.0.0",
+    "dotenv>=0.9.9",
+    "jupyter>=1.1.1",
+    "langchain>=0.3.27",
+    "langchain-core>=0.3.83",
+    "langchain-gigachat>=0.3.12",
+    "pandas>=2.3.3",
+]
