@@ -10,6 +10,7 @@ dependencies = [
     "langchain>=0.3.27",
     "langchain-core>=0.3.83",
     "langchain-gigachat>=0.3.12",
+    "langgraph>=0.6.11",
     "pandas>=2.3.3",
     "tqdm>=4.67.3",
 ]

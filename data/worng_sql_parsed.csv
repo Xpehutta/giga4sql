@@ -1,0 +1,863 @@
+ddl
+"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_rdm_cust_eks2crm_mast  SELECT 1 AS a
+   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt agr
+  WHERE (1 = 0);"
+"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust  SELECT vap.agrmnt_id AS agr_collat_id,
+    vap.agrmnt_pty_start_dt AS start_dt,
+    vap.agrmnt_pty_end_dt AS end_dt,
+    vap.pty_id AS cust_id,
+    vap.info_system_id
+   FROM (s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty vap
+     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat ac ON ((vap.agrmnt_id = ac.agr_collat_id)))
+  WHERE (vap.agrmnt_pty_role_id = 1);"
+"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo  SELECT prd.id AS agr_cred_id,
+    prd.start_dt,
+    prd.end_dt,
+    (h_1006.agr_cred_metric_txt)::bigint AS let_of_cred_cover_type_id,
+    h_1005.agr_cred_metric_dt AS max_delay_dt,
+    h_1004.agr_cred_metric_dt AS delay_dt,
+    prd.info_system_id
+   FROM (((( SELECT ""Window"".id,
+            ""Window"".info_system_id,
+            ""Window"".start_dt,
+            COALESCE((max(""Window"".start_dt) OVER (PARTITION BY ""Window"".id ORDER BY ""Window"".start_dt ROWS BETWEEN 1 FOLLOWING AND 1 FOLLOWING) - 1), '9999-12-31'::date) AS end_dt
+           FROM ( SELECT dt.id,
+                    dt.info_system_id,
+                    dt.start_dt
+                   FROM ( SELECT ""v_agr_cred_metric_hist$$$"".agr_cred_id AS id,
+                            ""v_agr_cred_metric_hist$$$"".info_system_id,
+                            ""v_agr_cred_metric_hist$$$"".start_dt
+                           FROM s_grnplm_as_t_didsd_029_vd_dwh.""v_agr_cred_metric_hist$$$""
+                          WHERE (""v_agr_cred_metric_hist$$$"".agr_cred_metric_type_id = ANY (ARRAY[('-1004'::integer)::bigint, ('-1005'::integer)::bigint, ('-1006'::integer)::bigint]))
+                        UNION ALL
+                         SELECT ""v_agr_cred_metric_hist$$$"".agr_cred_id AS id,
+                            ""v_agr_cred_metric_hist$$$"".info_system_id,
+                            (""v_agr_cred_metric_hist$$$"".end_dt + 1) AS start_dt
+                           FROM s_grnplm_as_t_didsd_029_vd_dwh.""v_agr_cred_metric_hist$$$""
+                          WHERE ((""v_agr_cred_metric_hist$$$"".agr_cred_metric_type_id = ANY (ARRAY[('-1004'::integer)::bigint, ('-1005'::integer)::bigint, ('-1006'::integer)::bigint])) AND (""v_agr_cred_metric_hist$$$"".end_dt <> '9999-12-31'::date))) dt
+                  GROUP BY dt.id, dt.info_system_id, dt.start_dt) ""Window""(id, info_system_id, start_dt)) prd
+     LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.""v_agr_cred_metric_hist$$$"" h_1006 ON ((((h_1006.agr_cred_id = prd.id) AND ((prd.start_dt >= h_1006.start_dt) AND (prd.start_dt <= h_1006.end_dt))) AND (h_1006.agr_cred_metric_type_id = '-1006'::integer))))
+     LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.""v_agr_cred_metric_hist$$$"" h_1005 ON ((((h_1005.agr_cred_id = prd.id) AND ((prd.start_dt >= h_1005.start_dt) AND (prd.start_dt <= h_1005.end_dt))) AND (h_1005.agr_cred_metric_type_id = '-1005'::integer))))
+     LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.""v_agr_cred_metric_hist$$$"" h_1004 ON ((((h_1004.agr_cred_id = prd.id) AND ((prd.start_dt >= h_1004.start_dt) AND (prd.start_dt <= h_1004.end_dt))) AND (h_1004.agr_cred_metric_type_id = '-1004'::integer))));"
+"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp  SELECT 1 AS a
+   FROM (((((((((((((((s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg stg
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp act)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp agr)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core agr_cor)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa set_coa_in)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg set_coa_a2c_stg)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn acopt)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port acport)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa ac_grp_coa)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa p2c)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp p2a)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.""v_$eks_agrmnt_to_coa"" ae2c)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa a2c)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_coa coa)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct glm)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.""v_$eks_agrmnt_to_coa_3"" ae3c)
+  WHERE ((1 = 0) AND (a2c.agrmnt_gl_acct_start_dt > ('now'::text)::date));"
+"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp  SELECT 1 AS a
+   FROM (((((((((((((((s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg stg
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp act)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp agr)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core agr_cor)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old set_coa_in)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg set_coa_a2c_stg)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn acopt)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port acport)
+     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa ac_grp_coa)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa p2c)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp p2a)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.""v_$eks_agrmnt_to_coa"" ae2c)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa a2c)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_coa coa)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct glm)
+     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.""v_$eks_agrmnt_to_coa_3"" ae3c)
+  WHERE ((1 = 0) AND (a2c.agrmnt_gl_acct_start_dt > ('now'::text)::date));"
+"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred  SELECT agr.agr_cred_id,
+    agr.prnt_agr_cred_id,
+    agr.info_system_id,
+    agr.agr_num,
+    agr.grntee_agr_num,
+    agr.signed_dt,
+    agr.issue_crncy_id,
+    agr.eks_overdraft_flag,
+    agr.agr_regls_type_id,
+        CASE
+            WHEN (agr.eks_issue_dt IS NOT NULL) THEN agr.eks_issue_dt
+            WHEN ((agr.agr_cred_type_cd = '1'::text) AND (agr.eks_transhes_issue_dt IS NOT NULL)) THEN agr.eks_transhes_issue_dt
+            ELSE aco_fst_iss.optn_issue_dt
+        END AS issue_dt,
+    agr.close_dt,
+    agr.expiration_dt,
+    agr.host_agr_cred_id,
+    agr.host_crm_id,
+    agr.eks_agr_cred_type_id,
+    agr.agr_frame_id,
+    agr.eks_rvlng_flag,
+    agr.issue_int_org_id,
+    agr.multi_crncy_flag,
+    agr.eks_old_restruct_cnt,
+    agr.eks_old_prolong_cnt,
+    agr.eks_contract_expiration_dt,
+    NULL::text AS diff_intst_rate_flag,
+    agr.grntee_claim_notice_dt,
+    agr.restruct_refin_default_flag,
+    agr.restruct_refin_default_dt,
+    coa_crncy.agra_l001_crncy_id AS debt_due_acc_crncy_id,
+    coa_crncy.agra_l007_crncy_id AS unused_limit_acc_crncy_id,
+    coa_crncy.agra_l009_crncy_id AS grntee_acc_crncy_id,
+    agr.has_higher_flag,
+    agr.zero_id,
+    agr.four_id,
+    agr.eks_cession_dt,
+    agr.agr_cession_id,
+    agr.cession_sell_got_cess_amt,
+    agr.cession_sell_debt_cess_amt,
+    agr.cession_sell_intrst_cess_amt,
+    agr.cession_sell_cess_amt,
+        CASE
+            WHEN (agr.f26_agr_cred_type_cd = 'Г'::text) THEN COALESCE(coa_crncy.agra_l009_crncy_id, agr.issue_crncy_id)
+            WHEN (agr.agr_cred_type_cd = '0'::text) THEN COALESCE(coa_crncy.agra_l001_crncy_id, agr.issue_crncy_id)
+            WHEN (agr.agr_cred_type_cd = '4'::text) THEN COALESCE(coa_crncy.agra_l001_crncy_id, agr.issue_crncy_id)
+            WHEN (agr.agr_cred_type_cd = '1'::text) THEN COALESCE(coa_crncy.agra_l007_crncy_id, agr.issue_crncy_id)
+            ELSE agr.issue_crncy_id
+        END AS crncy_id,
+    agr.agr_cred_type_id,
+    agr.agr_cred_type_cd,
+    agr.f26_agr_cred_type_id,
+    agr.f26_agr_cred_type_cd,
+    agr.rvlng_flag,
+    agr.overdraft_flag,
+        CASE
+            WHEN (cess_buy_coa.agr_cred_id IS NOT NULL) THEN cess_buy_coa.cess_buy_coa_open_dt
+            ELSE COALESCE(agr.eks_cession_dt,
+            CASE
+                WHEN (cess_sell_debt_coa.cess_debt_coa_open_dt >= COALESCE(cess_sell_debt_coa.coa_bind_dt, '1900-01-01'::date)) THEN cess_sell_debt_coa.cess_debt_coa_open_dt
+                ELSE cess_sell_debt_coa.coa_bind_dt
+            END, agr.cess_last_reg_dt)
+        END AS cession_dt,
+        CASE
+            WHEN (cess_buy_coa.agr_cred_id IS NOT NULL) THEN 'Y'::text
+            ELSE 'N'::text
+        END AS cession_buy_flag,
+        CASE
+            WHEN (((cess_sell_debt_coa.agr_cred_id IS NOT NULL) OR (agr.cess_last_reg_dt IS NOT NULL)) AND (cess_buy_coa.agr_cred_id IS NULL)) THEN 'Y'::text
+            ELSE 'N'::text
+        END AS cess_deferred_flag,
+    rat_first.agr_cred_rate_first_dt,
+    agr.cess_crncy_id,
+    agr.k7m_flag,
+    agr.poci_flag,
+    agr.fin_guarantee_flag,
+    agr.fin_guarantee_loan_flag,
+    agr.limit_use_end_dt,
+    agr.open_dt,
+    agr.eks_grntee_amt,
+    agr.grntee_ast_flag,
+    NULL::bigint AS crncy_id_uvdo,
+    NULL::text AS crncy_cd_uvdo,
+    NULL::text AS iso_crncy_cd_uvdo,
+    NULL::bigint AS cust_id_uvdo,
+    NULL::bigint AS letter_of_credit_type_id,
+    NULL::text AS let_of_cred_revoce_flag,
+    NULL::text AS let_of_cred_cover_flag,
+    NULL::bigint AS host_let_of_cred_cover_id,
+    NULL::numeric(38,8) AS agr_cred_start_amt,
+    agr.k7m_pl_flag,
+    NULL::bigint AS coa_cred_f26_prod_id,
+    cst.subject_area_type_id,
+    NULL::bigint AS let_of_cred_acc_scheme_id
+   FROM ((((((s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp agr
+     LEFT JOIN ( SELECT eatc.agrmnt_id AS agr_cred_id,
+            min(eatc.agrmnt_gl_acct_start_dt) AS coa_bind_dt,
+            min(c.coa_start_dt) AS cess_debt_coa_open_dt
+           FROM ((s_grnplm_as_t_didsd_010_vd_dwh.""v_$eks_agrmnt_to_coa_3"" eatc
+             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_coa c ON ((c.coa_id = eatc.coa_id)))
+             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct glma ON ((glma.gl_main_acct_id = c.gl_main_acct_id)))
+          WHERE (substr(glma.gl_main_acct_num, 1, 7) = '4742325'::text)
+          GROUP BY eatc.agrmnt_id) cess_sell_debt_coa ON ((cess_sell_debt_coa.agr_cred_id = agr.agr_cred_id)))
+     LEFT JOIN ( SELECT c.agr_cred_id,
+            min(c.start_dt) AS cess_buy_coa_open_dt
+           FROM s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period c
+          WHERE ((((1 = 1) AND ((c.coa_num ~~ '478%'::text) OR (substr(c.coa_num, 1, 5) = ANY (ARRAY['44111'::text, '44211'::text, '44311'::text, '44411'::text, '44511'::text, '44611'::text, '44711'::text, '44811'::text, '44911'::text, '45011'::text, '45111'::text, '45211'::text, '45311'::text, '45411'::text, '45611'::text])))) AND (substr(c.meas_cd, 1, 6) = 'AGRA_L'::text)) AND (c.meas_rub > (0)::numeric))
+          GROUP BY c.agr_cred_id) cess_buy_coa ON ((cess_buy_coa.agr_cred_id = agr.agr_cred_id)))
+     LEFT JOIN ( SELECT coa_crncs_sub.agr_cred_id,
+            max(
+                CASE
+                    WHEN (coa_crncs_sub.meas_cd = 'AGRA_L001'::text) THEN coa_crncs_sub.crncy_id
+                    ELSE NULL::bigint
+                END) AS agra_l001_crncy_id,
+            max(
+                CASE
+                    WHEN (coa_crncs_sub.meas_cd = 'AGRA_L007'::text) THEN coa_crncs_sub.crncy_id
+                    ELSE NULL::bigint
+                END) AS agra_l007_crncy_id,
+            max(
+                CASE
+                    WHEN (coa_crncs_sub.meas_cd = 'AGRA_L009'::text) THEN coa_crncs_sub.crncy_id
+                    ELSE NULL::bigint
+                END) AS agra_l009_crncy_id
+           FROM ( SELECT t.agr_cred_id,
+                    t.meas_cd,
+                    t.crncy_id
+                   FROM ( SELECT a_agr_cred_coa_period.agr_cred_id,
+                            a_agr_cred_coa_period.meas_cd,
+                            a_agr_cred_coa_period.crncy_id,
+                            row_number() OVER (PARTITION BY a_agr_cred_coa_period.agr_cred_id, a_agr_cred_coa_period.meas_cd ORDER BY NULL::text) AS rn,
+                            min(a_agr_cred_coa_period.crncy_id) OVER (PARTITION BY a_agr_cred_coa_period.agr_cred_id, a_agr_cred_coa_period.meas_cd) AS mn,
+                            max(a_agr_cred_coa_period.crncy_id) OVER (PARTITION BY a_agr_cred_coa_period.agr_cred_id, a_agr_cred_coa_period.meas_cd) AS mx
+                           FROM s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period
+                          WHERE (a_agr_cred_coa_period.meas_cd = ANY (ARRAY['AGRA_L001'::text, 'AGRA_L007'::text, 'AGRA_L009'::text]))) t
+                  WHERE ((t.rn = 1) AND (t.mx = t.mn))) coa_crncs_sub
+          GROUP BY coa_crncs_sub.agr_cred_id) coa_crncy ON ((coa_crncy.agr_cred_id = agr.agr_cred_id)))
+     LEFT JOIN ( SELECT t.agr_cred_id,
+            t.optn_issue_dt
+           FROM ( SELECT aco_fst_iss_1.agr_cred_id,
+                    aco_fst_iss_1.optn_dt AS optn_issue_dt,
+                    row_number() OVER (PARTITION BY aco_fst_iss_1.agr_cred_id ORDER BY aco_fst_iss_1.optn_dt) AS rn
+                   FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn aco_fst_iss_1
+                  WHERE (((aco_fst_iss_1.issue_flag = 'Y'::text) OR (aco_fst_iss_1.move_flag = 'Y'::text)) AND (aco_fst_iss_1.optn_rub <> (0)::numeric))) t
+          WHERE (t.rn = 1)) aco_fst_iss ON ((aco_fst_iss.agr_cred_id = agr.agr_cred_id)))
+     LEFT JOIN ( SELECT rat.agrmnt_id AS agr_cred_id,
+            min(rat.loan_agrmnt_rate_start_dt) AS agr_cred_rate_first_dt
+           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate rat
+          WHERE ((rat.rate_val > (0)::numeric) AND (rat.rate_calc_rule_id = ANY (ARRAY[37004, 13104, 45804, 67904, 35204])))
+          GROUP BY rat.agrmnt_id) rat_first ON ((rat_first.agr_cred_id = agr.agr_cred_id)))
+     LEFT JOIN ( SELECT v_cust.agr_cred_id,
+            max(
+                CASE
+                    WHEN ((COALESCE(v_cust.ind_flag, 'N'::text) = 'Y'::text) AND (COALESCE(v_cust.org_flag, 'N'::text) = 'N'::text)) THEN 2
+                    WHEN (COALESCE(v_cust.bank_flag, 'N'::text) = 'Y'::text) THEN 3
+                    ELSE 1
+                END) AS subject_area_type_id
+           FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust v_cust
+          WHERE ((('now'::text)::date >= v_cust.start_dt) AND (('now'::text)::date <= v_cust.end_dt))
+          GROUP BY v_cust.agr_cred_id) cst ON ((agr.agr_cred_id = cst.agr_cred_id)))
+UNION ALL
+ SELECT agr_cred.agr_cred_id,
+    NULL::bigint AS prnt_agr_cred_id,
+    agr_cred.info_system_id,
+    agr_cred.agr_num,
+    NULL::text AS grntee_agr_num,
+    agr_cred.open_dt AS signed_dt,
+    NULL::bigint AS issue_crncy_id,
+    NULL::text AS eks_overdraft_flag,
+    agr_cred.uvdo_accred_scheme_id AS agr_regls_type_id,
+    NULL::date AS issue_dt,
+    agr_cred.close_dt,
+    agr_cred.expiration_dt,
+    (agr_cred.host_agr_cred_id)::text AS host_agr_cred_id,
+    NULL::text AS host_crm_id,
+    NULL::bigint AS eks_agr_cred_type_id,
+        CASE
+            WHEN (flt.agr_cred_type_id = '-1034'::integer) THEN agr_cred.agr_cred_id
+            ELSE gen.agr_frame_id
+        END AS agr_frame_id,
+    NULL::text AS eks_rvlng_flag,
+    NULL::bigint AS issue_int_org_id,
+    NULL::text AS multi_crncy_flag,
+    NULL::smallint AS eks_old_restruct_cnt,
+    NULL::smallint AS eks_old_prolong_cnt,
+    NULL::date AS eks_contract_expiration_dt,
+    NULL::text AS diff_intst_rate_flag,
+    NULL::date AS grntee_claim_notice_dt,
+    NULL::text AS restruct_refin_default_flag,
+    NULL::date AS restruct_refin_default_dt,
+    NULL::bigint AS debt_due_acc_crncy_id,
+    NULL::bigint AS unused_limit_acc_crncy_id,
+    NULL::bigint AS grntee_acc_crncy_id,
+    'N'::text AS has_higher_flag,
+    NULL::bigint AS zero_id,
+    NULL::bigint AS four_id,
+    NULL::date AS eks_cession_dt,
+    NULL::bigint AS agr_cession_id,
+    NULL::numeric(38,8) AS cession_sell_got_cess_amt,
+    NULL::numeric(38,8) AS cession_sell_debt_cess_amt,
+    NULL::numeric(38,8) AS cession_sell_intrst_cess_amt,
+    NULL::numeric(38,8) AS cession_sell_cess_amt,
+    agr_crncy.crncy_id_eks AS crncy_id,
+    flt.agr_cred_type_id,
+    NULL::text AS agr_cred_type_cd,
+    NULL::bigint AS f26_agr_cred_type_id,
+    NULL::text AS f26_agr_cred_type_cd,
+    rvlng.rvlng_flag,
+    NULL::text AS overdraft_flag,
+    NULL::date AS cession_dt,
+    NULL::text AS cession_buy_flag,
+    NULL::text AS cess_deferred_flag,
+    NULL::date AS agr_cred_rate_first_dt,
+    NULL::bigint AS cess_crncy_id,
+    NULL::text AS k7m_flag,
+    NULL::text AS poci_flag,
+    NULL::text AS fin_guarantee_flag,
+    NULL::text AS fin_guarantee_loan_flag,
+    NULL::date AS limit_use_end_dt,
+    agr_cred.open_dt,
+    NULL::numeric(38,8) AS eks_grntee_amt,
+    NULL::text AS grntee_ast_flag,
+    agr_crncy.crncy_id AS crncy_id_uvdo,
+    agr_crncy.crncy_cd AS crncy_cd_uvdo,
+    agr_crncy.iso_crncy_cd AS iso_crncy_cd_uvdo,
+    agr_cred.payer_cust_id AS cust_id_uvdo,
+    agr_cred.agr_cred_type_id AS letter_of_credit_type_id,
+    agr_cred.revocable_accred_flag AS let_of_cred_revoce_flag,
+        CASE
+            WHEN ((gen.agr_frame_id IS NOT NULL) OR (flt.agr_cred_type_id = '-1034'::integer)) THEN 'N'::text
+            ELSE 'Y'::text
+        END AS let_of_cred_cover_flag,
+    agr_cred.host_eks_agrmnt_id AS host_let_of_cred_cover_id,
+    agr_cred.start_sum_crncy_amt AS agr_cred_start_amt,
+    NULL::text AS k7m_pl_flag,
+    NULL::bigint AS coa_cred_f26_prod_id,
+    (1)::smallint AS subject_area_type_id,
+    rvlng.accounting_scheme_id AS let_of_cred_acc_scheme_id
+   FROM ((((s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred agr_cred
+     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo flt ON ((agr_cred.agr_cred_id = flt.agr_cred_id)))
+     LEFT JOIN ( SELECT curu.crncy_id,
+            max(cure.crncy_id) AS crncy_id_eks,
+            max(COALESCE(cure.crncy_cd, '-1'::text)) AS crncy_cd,
+            max(COALESCE(cure.crncy_name, ''::text)) AS crncy_name,
+            max(curu.iso_crncy_cd) AS iso_crncy_cd,
+            max(curu.info_system_id) AS info_system_id
+           FROM (s_grnplm_as_t_didsd_029_vd_dwh.v_crncy curu
+             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_crncy cure ON ((cure.iso_crncy_cd = curu.iso_crncy_cd)))
+          GROUP BY curu.crncy_id) agr_crncy ON ((agr_crncy.crncy_id = agr_cred.crncy_id)))
+     LEFT JOIN ( SELECT t1.agr_cred_id,
+            max(t2.agr_cred_id) AS agr_frame_id
+           FROM (( SELECT ""v_agr_cred_metric_hist$$$"".agr_cred_id,
+                    max(""v_agr_cred_metric_hist$$$"".agr_cred_metric_txt) AS frame_host_agr_cred_id
+                   FROM s_grnplm_as_t_didsd_029_vd_dwh.""v_agr_cred_metric_hist$$$""
+                  WHERE ((((""v_agr_cred_metric_hist$$$"".agr_cred_metric_type_id = '-1007'::integer) AND (""v_agr_cred_metric_hist$$$"".agr_cred_metric_txt <> '-1'::text)) AND (btrim(""v_agr_cred_metric_hist$$$"".agr_cred_metric_txt) >= '0'::text)) AND (btrim(""v_agr_cred_metric_hist$$$"".agr_cred_metric_txt) <= '99999999999999999999'::text))
+                  GROUP BY ""v_agr_cred_metric_hist$$$"".agr_cred_id) t1
+             JOIN ( SELECT d_agr_cred_core_uvdo.agr_cred_id,
+                    d_agr_cred_core_uvdo.host_agr_cred_id
+                   FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo
+                  WHERE (d_agr_cred_core_uvdo.agr_cred_type_id = '-1034'::integer)) t2 ON ((t1.frame_host_agr_cred_id = t2.host_agr_cred_id)))
+          GROUP BY t1.agr_cred_id) gen ON ((agr_cred.agr_cred_id = gen.agr_cred_id)))
+     LEFT JOIN ( SELECT agr.agr_cred_id,
+            agr.accounting_scheme_id,
+                CASE
+                    WHEN ((aty.host_agr_cred_type_id = (12)::numeric) AND (ttt.uvdo_ttovarlc_name = 'Прочие товары'::text)) THEN 'Y'::text
+                    ELSE 'N'::text
+                END AS rvlng_flag
+           FROM ((s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred agr
+             LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.""v_$uvdo_ttovarlc"" ttt ON ((ttt.uvdo_ttovarlc_id = agr.uvdo_ttovarlc_id)))
+             LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_type aty ON ((aty.agr_cred_type_id = agr.agr_cred_type_id)))) rvlng ON ((agr_cred.agr_cred_id = rvlng.agr_cred_id)))
+UNION ALL
+ SELECT core.agr_cred_id,
+    NULL::bigint AS prnt_agr_cred_id,
+    core.info_system_id,
+    coa.coa_num AS agr_num,
+    NULL::text AS grntee_agr_num,
+    coa.coa_start_dt AS signed_dt,
+    coa.crncy_id AS issue_crncy_id,
+    NULL::text AS eks_overdraft_flag,
+    NULL::bigint AS agr_regls_type_id,
+    NULL::date AS issue_dt,
+    coa.coa_end_dt AS close_dt,
+    NULL::date AS expiration_dt,
+    '-1'::text AS host_agr_cred_id,
+    NULL::text AS host_crm_id,
+    NULL::bigint AS eks_agr_cred_type_id,
+    NULL::bigint AS agr_frame_id,
+    NULL::text AS eks_rvlng_flag,
+    xref.coa_int_org_pty_id AS issue_int_org_id,
+    NULL::text AS multi_crncy_flag,
+    NULL::smallint AS eks_old_restruct_cnt,
+    NULL::smallint AS eks_old_prolong_cnt,
+    NULL::date AS eks_contract_expiration_dt,
+    NULL::text AS diff_intst_rate_flag,
+    NULL::date AS grntee_claim_notice_dt,
+    NULL::text AS restruct_refin_default_flag,
+    NULL::date AS restruct_refin_default_dt,
+    NULL::bigint AS debt_due_acc_crncy_id,
+    NULL::bigint AS unused_limit_acc_crncy_id,
+    NULL::bigint AS grntee_acc_crncy_id,
+    NULL::text AS has_higher_flag,
+    NULL::bigint AS zero_id,
+    NULL::bigint AS four_id,
+    NULL::date AS eks_cession_dt,
+    NULL::bigint AS agr_cession_id,
+    NULL::numeric(38,8) AS cession_sell_got_cess_amt,
+    NULL::numeric(38,8) AS cession_sell_debt_cess_amt,
+    NULL::numeric(38,8) AS cession_sell_intrst_cess_amt,
+    NULL::numeric(38,8) AS cession_sell_cess_amt,
+    coa.crncy_id,
+    core.agr_cred_type_id,
+    NULL::text AS agr_cred_type_cd,
+    (4)::bigint AS f26_agr_cred_type_id,
+    '1'::text AS f26_agr_cred_type_cd,
+    NULL::text AS rvlng_flag,
+    NULL::text AS overdraft_flag,
+    NULL::date AS cession_dt,
+    NULL::text AS cession_buy_flag,
+    NULL::text AS cess_deferred_flag,
+    NULL::date AS agr_cred_rate_first_dt,
+    NULL::bigint AS cess_crncy_id,
+    NULL::text AS k7m_flag,
+    NULL::text AS poci_flag,
+    NULL::text AS fin_guarantee_flag,
+    NULL::text AS fin_guarantee_loan_flag,
+    NULL::date AS limit_use_end_dt,
+    coa.coa_start_dt AS open_dt,
+    NULL::numeric(38,8) AS eks_grntee_amt,
+    NULL::text AS grntee_ast_flag,
+    NULL::bigint AS crncy_id_uvdo,
+    NULL::text AS crncy_cd_uvdo,
+    NULL::text AS iso_crncy_cd_uvdo,
+    NULL::bigint AS cust_id_uvdo,
+    NULL::bigint AS letter_of_credit_type_id,
+    NULL::text AS let_of_cred_revoce_flag,
+    NULL::text AS let_of_cred_cover_flag,
+    NULL::bigint AS host_let_of_cred_cover_id,
+    NULL::numeric(38,8) AS agr_cred_start_amt,
+    NULL::text AS k7m_pl_flag,
+    type1.agrmnt_class_val_id AS coa_cred_f26_prod_id,
+    core.subject_area_type_id,
+    NULL::bigint AS let_of_cred_acc_scheme_id
+   FROM ((((s_grnplm_vd_t_bvd_db_dmslcl.d_coa_cred_core core
+     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_coa coa ON ((core.coa_id = coa.coa_id)))
+     LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_coa_int_org_xref xref ON (((((coa.coa_id = xref.coa_id) AND (xref.coa_int_org_type_id = '-1001'::integer)) AND (coa.coa_start_dt >= xref.coa_int_org_start_dt)) AND (coa.coa_start_dt <= xref.coa_int_org_end_dt))))
+     LEFT JOIN s_grnplm_vd_t_bvd_db_dmslcl.a_crncy_s s ON ((coa.crncy_id = s.crncy_id)))
+     LEFT JOIN ( SELECT max(o.agrmnt_class_val_id) AS agrmnt_class_val_id
+           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val o
+          WHERE ((o.agrmnt_clsfctn_id = ANY (ARRAY['-1024'::integer, '-1025'::integer])) AND (upper(o.agrmnt_clsfctn_val_cd) = 'TYPE_КК'::text))) type1 ON ((1 = 1)));"
+"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp  SELECT t.agr_cred_id,
+    t.prnt_agr_cred_id,
+    t.info_system_id,
+    t.agrmnt_num,
+    t.grntee_agr_num,
+    t.acct_signed_dt,
+    t.issue_crncy_id,
+    t.eks_overdraft_flag,
+    t.agr_regls_type_id,
+    t.eks_issue_dt,
+    t.eks_transhes_issue_dt,
+    t.close_dt,
+        CASE
+            WHEN (agra_a088.agr_cred_type_id = '-1006'::integer) THEN t.acct_bal_metric_dt_arh3
+            ELSE COALESCE(t.eks_contract_expiration_dt_arh, t.acct_bal_metric_dt_arh2)
+        END AS expiration_dt,
+    t.host_agr_cred_id,
+    t.host_crm_id,
+    t.eks_agr_cred_type_id,
+    t.agr_frame_id,
+    t.eks_rvlng_flag,
+    t.issue_int_org_id,
+    t.multi_crncy_flag,
+    t.eks_old_restruct_cnt,
+    t.eks_old_prolong_cnt,
+    t.eks_contract_expiration_dt,
+    t.grntee_claim_notice_dt,
+    t.restruct_refin_default_flag,
+    t.restruct_refin_default_dt,
+    t.has_higher_flag,
+    t.zero_id,
+    t.four_id,
+    t.eks_cession_dt,
+    t.agr_cession_id,
+    t.cession_sell_got_cess_amt,
+    t.cession_sell_debt_cess_amt,
+    t.cession_sell_intrst_cess_amt,
+    (t.cession_sell_debt_cess_amt + t.cession_sell_intrst_cess_amt) AS cession_sell_cess_amt,
+    agra_a088.agr_cred_type_id,
+    agra_a088.agr_cred_type_cd,
+    agra_a086.f26_agr_cred_type_id,
+    agra_a086.f26_agr_cred_type_cd,
+        CASE
+            WHEN ((t.has_higher_flag = 'Y'::text) AND (t.eks_overdraft_flag = 'N'::text)) THEN 'N'::text
+            WHEN (t.f26_agr_cred_type_cd = '10'::text) THEN 'N'::text
+            WHEN (t.eks_overdraft_flag = 'Y'::text) THEN 'Y'::text
+            WHEN (t.agr_cred_type_cd = ANY (ARRAY['1'::text, '6'::text])) THEN COALESCE(t.eks_rvlng_flag, 'N'::text)
+            ELSE 'N'::text
+        END AS rvlng_flag,
+        CASE
+            WHEN ((t.eks_overdraft_flag = 'Y'::text) AND (COALESCE(t.f26_agr_cred_type_cd, '0'::text) <> '10'::text)) THEN 'Y'::text
+            ELSE 'N'::text
+        END AS overdraft_flag,
+    cess_last_reg.cess_last_reg_dt,
+    agr_cession.crncy_id AS cess_crncy_id,
+        CASE
+            WHEN (aaca_k7m.agr_cred_id IS NULL) THEN 'N'::text
+            ELSE 'Y'::text
+        END AS k7m_flag,
+    fgt.eks_loan_poci_flag AS poci_flag,
+        CASE
+            WHEN (fgtd.eks_fin_guarantee_type_id IS NULL) THEN 'N'::text
+            ELSE 'Y'::text
+        END AS fin_guarantee_flag,
+    fgt.eks_fin_guarantee_loan_flag AS fin_guarantee_loan_flag,
+    lmt_mtrc.limit_use_end_dt,
+    t.open_dt,
+    grntee_amt_mtrc.eks_grntee_amt,
+        CASE
+            WHEN (gaflg.agrmnt_clsfctn_val_cd = 'GUAR_PREF_022'::text) THEN 'Y'::text
+            ELSE 'N'::text
+        END AS grntee_ast_flag,
+        CASE
+            WHEN (ap_k7m.c_bool = '1'::text) THEN 'Y'::text
+            ELSE 'N'::text
+        END AS k7m_pl_flag
+   FROM (((((((((((( SELECT agr.agrmnt_id AS agr_cred_id,
+            agr.prnt_agr_cred_id,
+            agr.info_system_id,
+            agr.agrmnt_num,
+            grnt.agrmnt_txt AS grntee_agr_num,
+            agr.acct_signed_dt,
+            ac.acct_crncy_id AS issue_crncy_id,
+                CASE
+                    WHEN ((COALESCE(ife.feature_ind, 'NO'::text) = 'YES'::text) AND (fag.fin_agrmnt_type_id <> '-1007'::integer)) THEN 'Y'::text
+                    ELSE 'N'::text
+                END AS eks_overdraft_flag,
+            ass.agrmnt_class_val_id AS agr_regls_type_id,
+            iss_dt.acct_bal_metric_dt AS eks_issue_dt,
+            trn_iss_dt.trn_acct_bal_metric_dt AS eks_transhes_issue_dt,
+            agr.acct_close_dt AS close_dt,
+            agr.host_agrmnt_cd AS host_agr_cred_id,
+            crm.appl_num AS host_crm_id,
+            fag.fin_agrmnt_type_id AS eks_agr_cred_type_id,
+                CASE
+                    WHEN (fag.fin_agrmnt_type_id = ANY (ARRAY[('-1007'::integer)::bigint, ('-1024'::integer)::bigint, ('-1025'::integer)::bigint])) THEN agr.agrmnt_id
+                    ELSE COALESCE(agr_frame.related_agrmnt_id, ('-1'::integer)::bigint)
+                END AS agr_frame_id,
+            COALESCE(
+                CASE rvlng.feature_ind
+                    WHEN IS NOT DISTINCT FROM 'YES'::text THEN 'Y'::text
+                    WHEN IS NOT DISTINCT FROM 'NO'::text THEN 'N'::text
+                    ELSE NULL::text
+                END, 'N'::text) AS eks_rvlng_flag,
+            issue_io.srv_int_org_id AS issue_int_org_id,
+            NULL::unknown AS multi_crncy_flag,
+            eks_old_res.eks_old_restruct_cnt,
+            eks_old_res_sec.acct_bal_metric_cnt AS eks_old_prolong_cnt,
+            agr.contract_expiration_dt AS eks_contract_expiration_dt,
+            not_dt.acct_bal_metric_dt AS grntee_claim_notice_dt,
+                CASE aaca_rrdf.agrmnt_class_val_id
+                    WHEN IS NOT DISTINCT FROM '-1001'::integer THEN 'Y'::text
+                    WHEN IS NOT DISTINCT FROM '-1002'::integer THEN 'N'::text
+                    ELSE NULL::text
+                END AS restruct_refin_default_flag,
+            amh_rrdd.acct_bal_metric_dt AS restruct_refin_default_dt,
+            agr.has_higher_flag,
+            cust_fin_pos_type_is.zero_id,
+            cust_fin_pos_type_is.four_id,
+            cess_la.cession_dt AS eks_cession_dt,
+            cessa.related_agrmnt_id AS agr_cession_id,
+            COALESCE(cess_get.acct_bal_metric_amt, (0)::numeric) AS cession_sell_got_cess_amt,
+            COALESCE(cess_give_pri.acct_bal_metric_amt, (0)::numeric) AS cession_sell_debt_cess_amt,
+            COALESCE(cess_give_int.acct_bal_metric_amt, (0)::numeric) AS cession_sell_intrst_cess_amt,
+            agr.acct_open_dt AS open_dt,
+            fag.fin_agrmnt_type_id,
+            agra_e086_1.f26_agr_cred_type_cd,
+            agra_e088.agr_cred_type_cd,
+            agr_frame.related_agrmnt_id,
+            cessa.related_agrmnt_id AS related_agrmnt_id_cess,
+            arh3.acct_bal_metric_dt AS acct_bal_metric_dt_arh3,
+            arh2.acct_bal_metric_dt AS acct_bal_metric_dt_arh2,
+            arh.eks_contract_expiration_dt AS eks_contract_expiration_dt_arh
+           FROM (((((((((((((((((((((((((((((( SELECT agr_1.agrmnt_id,
+                    agr_1.acct_open_dt,
+                    agr_1.contract_expiration_dt,
+                    agr_1.acct_src_id,
+                    agr_1.info_system_id,
+                    agr_1.acct_close_dt,
+                    agr_1.acct_signed_dt,
+                    agr_1.agrmnt_num,
+                    agr_1.host_agrmnt_cd,
+                    agr_1.host_agrmnt_guid,
+                    agr_1.asset_liab_cd,
+                    agr_1.agrmnt_categ_id,
+                    agr_1.agrmnt_rec_start_dt,
+                    agr_1.agrmnt_rec_end_dt,
+                    agr_1.bal_sheet_cd,
+                    agr_1.acct_current_stts_type_id,
+                    agr_1.alternate_agrmnt_name,
+                    agr_1.alternate_agrmnt_signed_dt,
+                    agr_1.crm_appl_id,
+                    agr_1.eks_host_murex_agr_id,
+                    agr_1.eks_del_dt,
+                    agr_1.host_pprb_agr_dep_id,
+                    agr_1.host_pprb_agr_rko_id,
+                    agr_1.online_flag,
+                    agr_1.offer_flag,
+                    agr_1.frame_agrmnt_type_id,
+                    agr_1.eks_visible_flag,
+                    agr_1.master_info_system_id,
+                    agr_1.host_calypso_agrmnt_id,
+                    agr_1.eks_transfer_to_sol_flag,
+                    agr_1.eks_transfer_to_pprb_flag,
+                    COALESCE(prnt.prnt_agr_cred_id, agr_1.agrmnt_id) AS prnt_agr_cred_id,
+                        CASE
+                            WHEN (COALESCE(prnt.prnt_agr_cred_id, agr_1.agrmnt_id) <> agr_1.agrmnt_id) THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS has_higher_flag
+                   FROM (s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt agr_1
+                     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp prnt ON ((prnt.agr_cred_id = agr_1.agrmnt_id)))
+                  WHERE (((1 = 1) AND (agr_1.agrmnt_categ_id = 1)) AND (agr_1.agrmnt_id <> '-1'::integer))) agr
+             JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_info_system i ON ((((i.info_system_id = agr.info_system_id) AND (i.info_system_type_cd = '010'::text)) AND (i.info_system_inst_cd = '910002'::text))))
+             JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt fag ON ((fag.agrmnt_id = agr.agrmnt_id)))
+             LEFT JOIN ( SELECT a2f.agrmnt_id,
+                    max(ife_1.feature_ind) AS feature_ind
+                   FROM ((s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature a2f
+                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_feature fea ON ((((fea.feature_id = a2f.feature_id) AND (fea.feature_type_id = 4)) AND (fea.feature_clsfctn_id = '-1014'::integer))))
+                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature ife_1 ON ((ife_1.feature_id = fea.feature_id)))
+                  WHERE (a2f.acct_feature_role_id = 1)
+                  GROUP BY a2f.agrmnt_id) ife ON ((ife.agrmnt_id = agr.agrmnt_id)))
+             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist grnt ON (((grnt.agrmnt_id = agr.agrmnt_id) AND (grnt.agrmnt_text_type_id = '-1004'::integer))))
+             LEFT JOIN ( SELECT a2f.agrmnt_id,
+                    max(ife_1.feature_ind) AS feature_ind
+                   FROM ((s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature a2f
+                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_feature fea ON ((fea.feature_id = a2f.feature_id)))
+                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature ife_1 ON ((ife_1.feature_id = fea.feature_id)))
+                  WHERE (((a2f.acct_feature_role_id = 1) AND (fea.feature_type_id = 4)) AND (fea.feature_clsfctn_id = '-1015'::integer))
+                  GROUP BY a2f.agrmnt_id) rvlng ON ((rvlng.agrmnt_id = agr.agrmnt_id)))
+             LEFT JOIN ( SELECT v_agmt_agmt_class_assoc.agrmnt_id,
+                    max(v_agmt_agmt_class_assoc.agrmnt_class_val_id) AS agrmnt_class_val_id
+                   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc
+                  WHERE (v_agmt_agmt_class_assoc.agrmnt_clsfctn_id = 12)
+                  GROUP BY v_agmt_agmt_class_assoc.agrmnt_id) ass ON ((ass.agrmnt_id = agr.agrmnt_id)))
+             LEFT JOIN ( SELECT t_1.agrmnt_id,
+                    t_1.acct_crncy_id
+                   FROM ( SELECT v_acct_crncy.agrmnt_id,
+                            v_acct_crncy.acct_crncy_id,
+                            row_number() OVER (PARTITION BY v_acct_crncy.agrmnt_id ORDER BY v_acct_crncy.acct_crncy_start_dt DESC) AS rn
+                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy
+                          WHERE (v_acct_crncy.crncy_use_id = 4)) t_1
+                  WHERE (t_1.rn = 1)) ac ON ((ac.agrmnt_id = agr.agrmnt_id)))
+             LEFT JOIN ( SELECT t_1.agrmnt_id,
+                    t_1.eks_contract_expiration_dt
+                   FROM ( SELECT v_acct_renewal_hist.agrmnt_id,
+                            v_acct_renewal_hist.eks_contract_expiration_dt,
+                            row_number() OVER (PARTITION BY v_acct_renewal_hist.agrmnt_id ORDER BY v_acct_renewal_hist.contract_start_dt) AS rn
+                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist
+                          WHERE (v_acct_renewal_hist.eks_contract_expiration_dt IS NOT NULL)) t_1
+                  WHERE (t_1.rn = 1)) arh ON ((arh.agrmnt_id = agr.agrmnt_id)))
+             LEFT JOIN ( SELECT t_1.agrmnt_id,
+                    t_1.acct_bal_metric_dt
+                   FROM ( SELECT v_agrmnt_metric_hist.agrmnt_id,
+                            v_agrmnt_metric_hist.acct_bal_metric_dt,
+                            row_number() OVER (PARTITION BY v_agrmnt_metric_hist.agrmnt_id ORDER BY v_agrmnt_metric_hist.acct_bal_metric_start_dt DESC) AS rn
+                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist
+                          WHERE (((v_agrmnt_metric_hist.acct_metric_type_id = '-1046'::integer) AND (v_agrmnt_metric_hist.bal_cat_type_id = '-1'::integer)) AND (v_agrmnt_metric_hist.acct_bal_metric_dt IS NOT NULL))) t_1
+                  WHERE (t_1.rn = 1)) arh2 ON ((arh2.agrmnt_id = agr.agrmnt_id)))
+             LEFT JOIN ( SELECT t_1.agrmnt_id,
+                    t_1.acct_bal_metric_dt
+                   FROM ( SELECT v_agrmnt_metric_hist.agrmnt_id,
+                            v_agrmnt_metric_hist.acct_bal_metric_dt,
+                            row_number() OVER (PARTITION BY v_agrmnt_metric_hist.agrmnt_id ORDER BY v_agrmnt_metric_hist.acct_bal_metric_start_dt) AS rn
+                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist
+                          WHERE (((v_agrmnt_metric_hist.acct_metric_type_id = '-1046'::integer) AND (v_agrmnt_metric_hist.bal_cat_type_id = '-1'::integer)) AND (v_agrmnt_metric_hist.acct_bal_metric_dt IS NOT NULL))) t_1
+                  WHERE (t_1.rn = 1)) arh3 ON ((arh3.agrmnt_id = agr.agrmnt_id)))
+             LEFT JOIN ( SELECT t_1.related_agrmnt_id,
+                    t_1.agrmnt_id
+                   FROM ( SELECT rel.related_agrmnt_id,
+                            rel.agrmnt_id,
+                            row_number() OVER (PARTITION BY rel.agrmnt_id ORDER BY rel.agrmnt_related_start_dt, rel.related_agrmnt_id DESC) AS rn
+                           FROM (( SELECT rel_1.related_agrmnt_id,
+                                    rel_1.agrmnt_id,
+                                    rel_1.agrmnt_related_start_dt
+                                   FROM ((s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related rel_1
+                                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt fag_1 ON ((fag_1.agrmnt_id = rel_1.related_agrmnt_id)))
+                                     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core cor_1 ON ((cor_1.agr_cred_id = rel_1.related_agrmnt_id)))
+                                  WHERE ((rel_1.agrmnt_related_type_id = 1) AND (fag_1.fin_agrmnt_type_id = ANY (ARRAY[('-1024'::integer)::bigint, ('-1025'::integer)::bigint])))
+                                UNION ALL
+                                 SELECT rel_1.agrmnt_id AS related_agrmnt_id,
+                                    rel_1.related_agrmnt_id AS agrmnt_id,
+                                    rel_1.agrmnt_related_start_dt
+                                   FROM ((s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related rel_1
+                                     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core cor_1 ON ((rel_1.agrmnt_id = cor_1.agr_cred_id)))
+                                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt fag_1 ON ((fag_1.agrmnt_id = rel_1.agrmnt_id)))
+                                  WHERE ((rel_1.agrmnt_related_type_id = '-1004'::integer) AND (fag_1.fin_agrmnt_type_id = '-1007'::integer))) rel
+                             JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core cor ON ((cor.agr_cred_id = rel.related_agrmnt_id)))) t_1
+                  WHERE (t_1.rn = 1)) agr_frame ON (((agr_frame.agrmnt_id = agr.agrmnt_id) AND (agr.prnt_agr_cred_id = agr.agrmnt_id))))
+             LEFT JOIN ( SELECT t_1.agr_cred_id,
+                    count(1) AS eks_old_restruct_cnt
+                   FROM ( SELECT mh.agrmnt_id AS agr_cred_id,
+                            mh.acct_bal_metric_start_dt
+                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist mh
+                          WHERE (((mh.acct_metric_type_id = '-1004'::integer) AND (mh.acct_bal_metric_start_dt <> '1900-01-01'::date)) AND (mh.acct_bal_metric_cnt > 0))) t_1
+                  GROUP BY t_1.agr_cred_id) eks_old_res ON ((eks_old_res.agr_cred_id = agr.agrmnt_id)))
+             LEFT JOIN ( SELECT t_1.agrmnt_id,
+                    t_1.acct_bal_metric_cnt
+                   FROM ( SELECT eks_old_res_sec_1.agrmnt_id,
+                            eks_old_res_sec_1.acct_bal_metric_cnt,
+                            row_number() OVER (PARTITION BY eks_old_res_sec_1.agrmnt_id ORDER BY eks_old_res_sec_1.acct_bal_metric_start_dt) AS rn
+                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist eks_old_res_sec_1
+                          WHERE (((eks_old_res_sec_1.acct_metric_type_id = '-1005'::integer) AND (eks_old_res_sec_1.bal_cat_type_id = '-1'::integer)) AND (eks_old_res_sec_1.acct_bal_metric_crncy_id IS NULL))) t_1
+                  WHERE (t_1.rn = 1)) eks_old_res_sec ON ((eks_old_res_sec.agrmnt_id = agr.agrmnt_id)))
+             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist not_dt ON ((((not_dt.agrmnt_id = agr.agrmnt_id) AND (not_dt.acct_metric_type_id = '-1044'::integer)) AND (not_dt.bal_cat_type_id = '-1'::integer))))
+             LEFT JOIN ( SELECT t_1.agrmnt_id,
+                    t_1.acct_bal_metric_dt
+                   FROM ( SELECT a_m_t.agrmnt_id,
+                            a_m_t.acct_bal_metric_dt,
+                            row_number() OVER (PARTITION BY a_m_t.agrmnt_id ORDER BY a_m_t.acct_bal_metric_start_dt DESC NULLS LAST, a_m_t.acct_bal_metric_end_dt DESC NULLS LAST, a_m_t.acct_bal_metric_dt DESC NULLS LAST) AS rn
+                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist a_m_t
+                          WHERE ((a_m_t.bal_cat_type_id = '-1'::integer) AND (a_m_t.acct_metric_type_id = '-1043'::integer))) t_1
+                  WHERE (t_1.rn = 1)) iss_dt ON ((agr.agrmnt_id = iss_dt.agrmnt_id)))
+             LEFT JOIN ( SELECT prnt.prnt_agr_cred_id,
+                    min(iss_dt_1.acct_bal_metric_dt) AS trn_acct_bal_metric_dt
+                   FROM (( SELECT t_1.agrmnt_id,
+                            t_1.acct_bal_metric_dt
+                           FROM ( SELECT a_m_t.agrmnt_id,
+                                    a_m_t.acct_bal_metric_dt,
+                                    row_number() OVER (PARTITION BY a_m_t.agrmnt_id ORDER BY a_m_t.acct_bal_metric_start_dt DESC NULLS LAST, a_m_t.acct_bal_metric_end_dt DESC NULLS LAST) AS rn
+                                   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist a_m_t
+                                  WHERE ((a_m_t.bal_cat_type_id = '-1'::integer) AND (a_m_t.acct_metric_type_id = '-1043'::integer))) t_1
+                          WHERE (t_1.rn = 1)) iss_dt_1
+                     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp prnt ON ((prnt.prnt_agr_cred_id = iss_dt_1.agrmnt_id)))
+                  GROUP BY prnt.prnt_agr_cred_id) trn_iss_dt ON ((agr.agrmnt_id = trn_iss_dt.prnt_agr_cred_id)))
+             LEFT JOIN ( SELECT t_1.agr_cred_id,
+                    t_1.srv_int_org_id
+                   FROM ( SELECT d_agr_cred_int_org_tmp.agr_cred_id,
+                            d_agr_cred_int_org_tmp.srv_int_org_id,
+                            row_number() OVER (PARTITION BY d_agr_cred_int_org_tmp.agr_cred_id ORDER BY d_agr_cred_int_org_tmp.start_dt) AS rn
+                           FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_int_org_tmp) t_1
+                  WHERE (t_1.rn = 1)) issue_io ON ((agr.agrmnt_id = issue_io.agr_cred_id)))
+             LEFT JOIN ( SELECT t_1.agrmnt_id,
+                    t_1.appl_num
+                   FROM ( SELECT ata.agrmnt_id,
+                            a.appl_num,
+                            row_number() OVER (PARTITION BY ata.agrmnt_id ORDER BY ata.agmt_to_appl_start_dt DESC, a.appl_num) AS rn
+                           FROM (s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_appl ata
+                             JOIN s_grnplm_as_t_didsd_039_vd_dwh.v_appl a ON ((a.appl_id = ata.appl_id)))
+                          WHERE (ata.agrmnt_appl_role_id = '-1004'::integer)) t_1
+                  WHERE (t_1.rn = 1)) crm ON ((agr.agrmnt_id = crm.agrmnt_id)))
+             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc aaca_rrdf ON (((agr.agrmnt_id = aaca_rrdf.agrmnt_id) AND (aaca_rrdf.agrmnt_clsfctn_id = '-1031'::integer))))
+             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist amh_rrdd ON ((((agr.agrmnt_id = amh_rrdd.agrmnt_id) AND (amh_rrdd.bal_cat_type_id = '-1'::integer)) AND (amh_rrdd.acct_metric_type_id = '-1045'::integer))))
+             LEFT JOIN ( SELECT v_pty_class_val.info_system_id,
+                    max(
+                        CASE
+                            WHEN (v_pty_class_val.pty_class_val_cd = '0'::text) THEN v_pty_class_val.pty_class_val_id
+                            ELSE NULL::bigint
+                        END) AS zero_id,
+                    max(
+                        CASE
+                            WHEN (v_pty_class_val.pty_class_val_cd = '4'::text) THEN v_pty_class_val.pty_class_val_id
+                            ELSE NULL::bigint
+                        END) AS four_id
+                   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val
+                  WHERE ((v_pty_class_val.pty_clsfctn_id = 5) AND (v_pty_class_val.pty_class_val_cd = ANY (ARRAY['0'::text, '4'::text])))
+                  GROUP BY v_pty_class_val.info_system_id) cust_fin_pos_type_is ON ((cust_fin_pos_type_is.info_system_id = agr.info_system_id)))
+             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_loan_acct cess_la ON ((agr.agrmnt_id = cess_la.agrmnt_id)))
+             LEFT JOIN ( SELECT t_1.agrmnt_id,
+                    t_1.related_agrmnt_id
+                   FROM ( SELECT cessa_1.agrmnt_id,
+                            cessa_1.related_agrmnt_id,
+                            row_number() OVER (PARTITION BY cessa_1.agrmnt_id ORDER BY agr_cess.acct_open_dt DESC) AS rn
+                           FROM (s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related cessa_1
+                             JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt agr_cess ON ((agr_cess.agrmnt_id = cessa_1.related_agrmnt_id)))
+                          WHERE (((cessa_1.agrmnt_related_type_id = '-1009'::integer) AND (cessa_1.agrmnt_related_end_dt = '9999-12-31'::date)) AND (cessa_1.related_agrmnt_id IS NOT NULL))) t_1
+                  WHERE (t_1.rn = 1)) cessa ON ((agr.agrmnt_id = cessa.agrmnt_id)))
+             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist cess_get ON (((((agr.agrmnt_id = cess_get.agrmnt_id) AND (cess_get.acct_metric_type_id = '-1054'::integer)) AND (cess_get.bal_cat_type_id = '-1'::integer)) AND (cess_get.acct_bal_metric_end_dt = '9999-12-31'::date))))
+             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist cess_give_pri ON (((((agr.agrmnt_id = cess_give_pri.agrmnt_id) AND (cess_give_pri.acct_metric_type_id = '-1053'::integer)) AND (cess_give_pri.bal_cat_type_id = '-1'::integer)) AND (cess_give_pri.acct_bal_metric_end_dt = '9999-12-31'::date))))
+             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist cess_give_int ON (((((agr.agrmnt_id = cess_give_int.agrmnt_id) AND (cess_give_int.acct_metric_type_id = '-1052'::integer)) AND (cess_give_int.bal_cat_type_id = '-1'::integer)) AND (cess_give_int.acct_bal_metric_end_dt = '9999-12-31'::date))))
+             LEFT JOIN s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type agra_e088 ON ((agra_e088.agr_cred_type_id = fag.fin_agrmnt_type_id)))
+             LEFT JOIN ( SELECT t_1.agr_cred_id,
+                    t_1.eks_a_f26_agr_cred_type_id
+                   FROM ( SELECT d_agr_cred_prod.agr_cred_id,
+                            d_agr_cred_prod.eks_a_f26_agr_cred_type_id,
+                            row_number() OVER (PARTITION BY d_agr_cred_prod.agr_cred_id ORDER BY d_agr_cred_prod.start_dt DESC) AS rn
+                           FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod
+                          WHERE (NOT (d_agr_cred_prod.eks_a_f26_agr_cred_type_id IN ( SELECT a_f26_agr_cred_type.f26_agr_cred_type_id
+                                   FROM s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type
+                                  WHERE (a_f26_agr_cred_type.f26_agr_cred_type_cd = '9'::text))))) t_1
+                  WHERE (t_1.rn = 1)) agr_cred_prod ON ((agr_cred_prod.agr_cred_id = agr.agrmnt_id)))
+             LEFT JOIN s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type agra_e086_1 ON ((agr_cred_prod.eks_a_f26_agr_cred_type_id = agra_e086_1.f26_agr_cred_type_id)))) t
+     LEFT JOIN ( SELECT a.f26_agr_cred_type_cd,
+            max(a.f26_agr_cred_type_id) AS f26_agr_cred_type_id
+           FROM s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type a
+          GROUP BY a.f26_agr_cred_type_cd) agra_a086 ON ((agra_a086.f26_agr_cred_type_cd =
+        CASE
+            WHEN (t.has_higher_flag = 'Y'::text) THEN 'Т'::text
+            WHEN (t.fin_agrmnt_type_id = ANY (ARRAY[('-1007'::integer)::bigint, ('-1024'::integer)::bigint, ('-1025'::integer)::bigint, ('-1028'::integer)::bigint, ('-1031'::integer)::bigint])) THEN 'Не опр.'::text
+            WHEN (t.f26_agr_cred_type_cd = '10'::text) THEN '10'::text
+            WHEN (COALESCE(t.eks_overdraft_flag, 'N'::text) = 'Y'::text) THEN ('4'::text ||
+            CASE
+                WHEN (t.f26_agr_cred_type_cd = '4.1'::text) THEN '.1'::text
+                ELSE ''::text
+            END)
+            WHEN (t.agr_cred_type_cd = '4'::text) THEN 'Т'::text
+            WHEN (t.agr_cred_type_cd = '2'::text) THEN 'Г'::text
+            WHEN ((t.agr_cred_type_cd = '0'::text) AND (t.f26_agr_cred_type_cd = '7'::text)) THEN '7'::text
+            WHEN (((COALESCE(t.related_agrmnt_id, ('-1'::integer)::bigint) <> '-1'::integer) AND (t.agr_cred_type_cd = '0'::text)) AND (t.f26_agr_cred_type_cd = '6.1'::text)) THEN '6.1'::text
+            WHEN ((COALESCE(t.related_agrmnt_id, ('-1'::integer)::bigint) <> '-1'::integer) AND (t.agr_cred_type_cd = '0'::text)) THEN '5.1'::text
+            WHEN (t.agr_cred_type_cd = '0'::text) THEN '1'::text
+            WHEN (((COALESCE(t.related_agrmnt_id, ('-1'::integer)::bigint) <> '-1'::integer) AND (t.agr_cred_type_cd = '1'::text)) AND (t.eks_rvlng_flag = 'N'::text)) THEN '5.2'::text
+            WHEN ((t.agr_cred_type_cd = '1'::text) AND (t.eks_rvlng_flag = 'N'::text)) THEN ('2'::text ||
+            CASE
+                WHEN (t.f26_agr_cred_type_cd = '2.1'::text) THEN '.1'::text
+                ELSE ''::text
+            END)
+            WHEN ((COALESCE(t.related_agrmnt_id, ('-1'::integer)::bigint) <> '-1'::integer) AND (t.eks_rvlng_flag = 'Y'::text)) THEN ('5.3'::text ||
+            CASE
+                WHEN (t.f26_agr_cred_type_cd = '5.3-дс'::text) THEN '-дс'::text
+                ELSE ''::text
+            END)
+            WHEN (t.eks_rvlng_flag = 'Y'::text) THEN ('3'::text ||
+            CASE
+                WHEN (t.f26_agr_cred_type_cd = '3-дс'::text) THEN '-дс'::text
+                WHEN (t.f26_agr_cred_type_cd = '3-пд'::text) THEN '-пд'::text
+                ELSE ''::text
+            END)
+            ELSE NULL::text
+        END)))
+     LEFT JOIN ( SELECT a.agr_cred_type_cd,
+            max(a.agr_cred_type_id) AS agr_cred_type_id
+           FROM s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type a
+          GROUP BY a.agr_cred_type_cd) agra_a088 ON ((agra_a088.agr_cred_type_cd =
+        CASE
+            WHEN (t.has_higher_flag = 'Y'::text) THEN '4'::text
+            WHEN (t.f26_agr_cred_type_cd = '10'::text) THEN '-'::text
+            WHEN ((t.eks_overdraft_flag = 'Y'::text) AND (t.fin_agrmnt_type_id <> '-1007'::integer)) THEN '1'::text
+            WHEN ((t.agr_cred_type_cd = '1'::text) AND (t.f26_agr_cred_type_cd = '7'::text)) THEN '-'::text
+            ELSE COALESCE(t.agr_cred_type_cd, '-'::text)
+        END)))
+     LEFT JOIN ( SELECT d_agr_cred_prod.agr_cred_id,
+            max(d_agr_cred_prod.start_dt) AS cess_last_reg_dt
+           FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod
+          WHERE (d_agr_cred_prod.eks_a_f26_agr_cred_type_id IN ( SELECT a_f26_agr_cred_type.f26_agr_cred_type_id
+                   FROM s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type
+                  WHERE (a_f26_agr_cred_type.f26_agr_cred_type_cd = '9'::text)))
+          GROUP BY d_agr_cred_prod.agr_cred_id) cess_last_reg ON ((cess_last_reg.agr_cred_id = t.agr_cred_id)))
+     LEFT JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession agr_cession ON ((agr_cession.agr_cession_id = t.related_agrmnt_id_cess)))
+     LEFT JOIN ( SELECT aaca_k7m_1.agrmnt_id AS agr_cred_id
+           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc aaca_k7m_1
+          WHERE ((aaca_k7m_1.agrmnt_clsfctn_id = '-1038'::integer) AND (aaca_k7m_1.agrmnt_class_val_id = '-1001'::integer))
+          GROUP BY aaca_k7m_1.agrmnt_id) aaca_k7m ON ((t.agr_cred_id = aaca_k7m.agr_cred_id)))
+     LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct fgt ON ((t.agr_cred_id = fgt.agrmnt_id)))
+     LEFT JOIN ( SELECT max(fgtd_1.eks_fin_guarantee_type_id) AS eks_fin_guarantee_type_id
+           FROM s_grnplm_as_t_didsd_010_vd_dwh.""v_$eks_fin_guarantee_type"" fgtd_1
+          WHERE (fgtd_1.eks_fin_guarantee_type_cd = 'FIN'::text)) fgtd ON ((fgt.eks_fin_guarantee_type_id = fgtd.eks_fin_guarantee_type_id)))
+     LEFT JOIN ( SELECT t_1.agrmnt_id,
+            t_1.limit_use_end_dt
+           FROM ( SELECT v_agrmnt_metric_hist.agrmnt_id,
+                    v_agrmnt_metric_hist.acct_bal_metric_dt AS limit_use_end_dt,
+                    row_number() OVER (PARTITION BY v_agrmnt_metric_hist.agrmnt_id ORDER BY v_agrmnt_metric_hist.acct_bal_metric_start_dt DESC) AS rn
+                   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist
+                  WHERE (((v_agrmnt_metric_hist.acct_metric_type_id = '-1060'::integer) AND (v_agrmnt_metric_hist.bal_cat_type_id = '-1'::integer)) AND (v_agrmnt_metric_hist.acct_bal_metric_dt IS NOT NULL))) t_1
+          WHERE (t_1.rn = 1)) lmt_mtrc ON ((t.agr_cred_id = lmt_mtrc.agrmnt_id)))
+     LEFT JOIN ( SELECT t_1.agrmnt_id,
+            t_1.eks_grntee_amt
+           FROM ( SELECT v_agrmnt_metric_hist.agrmnt_id,
+                    v_agrmnt_metric_hist.acct_bal_metric_amt AS eks_grntee_amt,
+                    row_number() OVER (PARTITION BY v_agrmnt_metric_hist.agrmnt_id ORDER BY v_agrmnt_metric_hist.acct_bal_metric_start_dt DESC) AS rn
+                   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist
+                  WHERE (((v_agrmnt_metric_hist.acct_metric_type_id = '-1017'::integer) AND (v_agrmnt_metric_hist.bal_cat_type_id = '-1'::integer)) AND (v_agrmnt_metric_hist.acct_metric_type_id IS NOT NULL))) t_1
+          WHERE (t_1.rn = 1)) grntee_amt_mtrc ON ((t.agr_cred_id = grntee_amt_mtrc.agrmnt_id)))
+     LEFT JOIN ( SELECT t_1.agrmnt_id,
+            t_1.agrmnt_clsfctn_val_cd
+           FROM ( SELECT aa.agrmnt_id,
+                    ac.agrmnt_clsfctn_val_cd,
+                    row_number() OVER (PARTITION BY aa.agrmnt_id ORDER BY aa.agrmnt_class_start_dt DESC, ac.agmt_class_val_start_dt) AS rn
+                   FROM (s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc aa
+                     LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val ac ON (((ac.agrmnt_class_val_id = aa.agrmnt_class_val_id) AND (aa.agrmnt_clsfctn_id = ac.agrmnt_clsfctn_id))))
+                  WHERE (((1 = 1) AND (aa.agrmnt_clsfctn_id = '-1039'::integer)) AND (aa.info_system_id = 1108))) t_1
+          WHERE (t_1.rn = 1)) gaflg ON ((t.agr_cred_id = gaflg.agrmnt_id)))
+     LEFT JOIN ( SELECT ap_k7m_1.agrmnt_id AS agr_cred_id,
+            max(ap_k7m_1.c_bool) AS c_bool
+           FROM s_grnplm_as_t_didsd_010_vd_dwh.""v_agrmnt_$$properties"" ap_k7m_1
+          WHERE ((1 = 1) AND (ap_k7m_1.c_code = 'DealType'::text))
+          GROUP BY ap_k7m_1.agrmnt_id) ap_k7m ON ((t.agr_cred_id = ap_k7m.agr_cred_id)))
+  WHERE ((1 = 1) AND (t.fin_agrmnt_type_id = ANY (ARRAY[('-1006'::integer)::bigint, ('-1007'::integer)::bigint, ('-1008'::integer)::bigint, ('-1009'::integer)::bigint, ('-1010'::integer)::bigint, ('-1024'::integer)::bigint, ('-1025'::integer)::bigint, ('-1028'::integer)::bigint, ('-1031'::integer)::bigint])));"
