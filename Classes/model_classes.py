@@ -43,7 +43,7 @@ class SQLLineageExtractor:
         max_tokens: int = 2048,
         template: Optional[str] = None,
     ):
-        self.credentials = credentials or os.getenv("GIGACHAT_API_KEY")
+        self.credentials = credentials or os.getenv("GIGACHAT_CREDENTIALS")
         if not self.credentials:
             raise ValueError(
                 "GigaChat API key must be provided via 'credentials' parameter "
