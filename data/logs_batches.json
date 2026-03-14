@@ -1,0 +1,1808 @@
+{
+  "timestamp": "2026-03-14T18:09:26.205196",
+  "sqls": [
+    "INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_rdm_cust_eks2crm_mast  SELECT 1 AS a\n   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt agr\n  WHERE (1 = 0);",
+    "INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust  SELECT vap.agrmnt_id AS agr_collat_id,\n    vap.agrmnt_pty_start_dt AS start_dt,\n    vap.agrmnt_pty_end_dt AS end_dt,\n    vap.pty_id AS cust_id,\n    vap.info_system_id\n   FROM (s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty vap\n     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat ac ON ((vap.agrmnt_id = ac.agr_collat_id)))\n  WHERE (vap.agrmnt_pty_role_id = 1);",
+    "INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo  SELECT prd.id AS agr_cred_id,\n    prd.start_dt,\n    prd.end_dt,\n    (h_1006.agr_cred_metric_txt)::bigint AS let_of_cred_cover_type_id,\n    h_1005.agr_cred_metric_dt AS max_delay_dt,\n    h_1004.agr_cred_metric_dt AS delay_dt,\n    prd.info_system_id\n   FROM (((( SELECT \"Window\".id,\n            \"Window\".info_system_id,\n            \"Window\".start_dt,\n            COALESCE((max(\"Window\".start_dt) OVER (PARTITION BY \"Window\".id ORDER BY \"Window\".start_dt ROWS BETWEEN 1 FOLLOWING AND 1 FOLLOWING) - 1), '9999-12-31'::date) AS end_dt\n           FROM ( SELECT dt.id,\n                    dt.info_system_id,\n                    dt.start_dt\n                   FROM ( SELECT \"v_agr_cred_metric_hist$$$\".agr_cred_id AS id,\n                            \"v_agr_cred_metric_hist$$$\".info_system_id,\n                            \"v_agr_cred_metric_hist$$$\".start_dt\n                           FROM s_grnplm_as_t_didsd_029_vd_dwh.\"v_agr_cred_metric_hist$$$\"\n                          WHERE (\"v_agr_cred_metric_hist$$$\".agr_cred_metric_type_id = ANY (ARRAY[('-1004'::integer)::bigint, ('-1005'::integer)::bigint, ('-1006'::integer)::bigint]))\n                        UNION ALL\n                         SELECT \"v_agr_cred_metric_hist$$$\".agr_cred_id AS id,\n                            \"v_agr_cred_metric_hist$$$\".info_system_id,\n                            (\"v_agr_cred_metric_hist$$$\".end_dt + 1) AS start_dt\n                           FROM s_grnplm_as_t_didsd_029_vd_dwh.\"v_agr_cred_metric_hist$$$\"\n                          WHERE ((\"v_agr_cred_metric_hist$$$\".agr_cred_metric_type_id = ANY (ARRAY[('-1004'::integer)::bigint, ('-1005'::integer)::bigint, ('-1006'::integer)::bigint])) AND (\"v_agr_cred_metric_hist$$$\".end_dt <> '9999-12-31'::date))) dt\n                  GROUP BY dt.id, dt.info_system_id, dt.start_dt) \"Window\"(id, info_system_id, start_dt)) prd\n     LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.\"v_agr_cred_metric_hist$$$\" h_1006 ON ((((h_1006.agr_cred_id = prd.id) AND ((prd.start_dt >= h_1006.start_dt) AND (prd.start_dt <= h_1006.end_dt))) AND (h_1006.agr_cred_metric_type_id = '-1006'::integer))))\n     LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.\"v_agr_cred_metric_hist$$$\" h_1005 ON ((((h_1005.agr_cred_id = prd.id) AND ((prd.start_dt >= h_1005.start_dt) AND (prd.start_dt <= h_1005.end_dt))) AND (h_1005.agr_cred_metric_type_id = '-1005'::integer))))\n     LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.\"v_agr_cred_metric_hist$$$\" h_1004 ON ((((h_1004.agr_cred_id = prd.id) AND ((prd.start_dt >= h_1004.start_dt) AND (prd.start_dt <= h_1004.end_dt))) AND (h_1004.agr_cred_metric_type_id = '-1004'::integer))));",
+    "INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp  SELECT 1 AS a\n   FROM (((((((((((((((s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg stg\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp act)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp agr)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core agr_cor)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa set_coa_in)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg set_coa_a2c_stg)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn acopt)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port acport)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa ac_grp_coa)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa p2c)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp p2a)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.\"v_$eks_agrmnt_to_coa\" ae2c)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa a2c)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_coa coa)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct glm)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.\"v_$eks_agrmnt_to_coa_3\" ae3c)\n  WHERE ((1 = 0) AND (a2c.agrmnt_gl_acct_start_dt > ('now'::text)::date));",
+    "INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp  SELECT 1 AS a\n   FROM (((((((((((((((s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg stg\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp act)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp agr)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core agr_cor)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old set_coa_in)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg set_coa_a2c_stg)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn acopt)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port acport)\n     CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa ac_grp_coa)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa p2c)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp p2a)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.\"v_$eks_agrmnt_to_coa\" ae2c)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa a2c)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_coa coa)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct glm)\n     CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.\"v_$eks_agrmnt_to_coa_3\" ae3c)\n  WHERE ((1 = 0) AND (a2c.agrmnt_gl_acct_start_dt > ('now'::text)::date));",
+    "INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred  SELECT agr.agr_cred_id,\n    agr.prnt_agr_cred_id,\n    agr.info_system_id,\n    agr.agr_num,\n    agr.grntee_agr_num,\n    agr.signed_dt,\n    agr.issue_crncy_id,\n    agr.eks_overdraft_flag,\n    agr.agr_regls_type_id,\n        CASE\n            WHEN (agr.eks_issue_dt IS NOT NULL) THEN agr.eks_issue_dt\n            WHEN ((agr.agr_cred_type_cd = '1'::text) AND (agr.eks_transhes_issue_dt IS NOT NULL)) THEN agr.eks_transhes_issue_dt\n            ELSE aco_fst_iss.optn_issue_dt\n        END AS issue_dt,\n    agr.close_dt,\n    agr.expiration_dt,\n    agr.host_agr_cred_id,\n    agr.host_crm_id,\n    agr.eks_agr_cred_type_id,\n    agr.agr_frame_id,\n    agr.eks_rvlng_flag,\n    agr.issue_int_org_id,\n    agr.multi_crncy_flag,\n    agr.eks_old_restruct_cnt,\n    agr.eks_old_prolong_cnt,\n    agr.eks_contract_expiration_dt,\n    NULL::text AS diff_intst_rate_flag,\n    agr.grntee_claim_notice_dt,\n    agr.restruct_refin_default_flag,\n    agr.restruct_refin_default_dt,\n    coa_crncy.agra_l001_crncy_id AS debt_due_acc_crncy_id,\n    coa_crncy.agra_l007_crncy_id AS unused_limit_acc_crncy_id,\n    coa_crncy.agra_l009_crncy_id AS grntee_acc_crncy_id,\n    agr.has_higher_flag,\n    agr.zero_id,\n    agr.four_id,\n    agr.eks_cession_dt,\n    agr.agr_cession_id,\n    agr.cession_sell_got_cess_amt,\n    agr.cession_sell_debt_cess_amt,\n    agr.cession_sell_intrst_cess_amt,\n    agr.cession_sell_cess_amt,\n        CASE\n            WHEN (agr.f26_agr_cred_type_cd = '\u0413'::text) THEN COALESCE(coa_crncy.agra_l009_crncy_id, agr.issue_crncy_id)\n            WHEN (agr.agr_cred_type_cd = '0'::text) THEN COALESCE(coa_crncy.agra_l001_crncy_id, agr.issue_crncy_id)\n            WHEN (agr.agr_cred_type_cd = '4'::text) THEN COALESCE(coa_crncy.agra_l001_crncy_id, agr.issue_crncy_id)\n            WHEN (agr.agr_cred_type_cd = '1'::text) THEN COALESCE(coa_crncy.agra_l007_crncy_id, agr.issue_crncy_id)\n            ELSE agr.issue_crncy_id\n        END AS crncy_id,\n    agr.agr_cred_type_id,\n    agr.agr_cred_type_cd,\n    agr.f26_agr_cred_type_id,\n    agr.f26_agr_cred_type_cd,\n    agr.rvlng_flag,\n    agr.overdraft_flag,\n        CASE\n            WHEN (cess_buy_coa.agr_cred_id IS NOT NULL) THEN cess_buy_coa.cess_buy_coa_open_dt\n            ELSE COALESCE(agr.eks_cession_dt,\n            CASE\n                WHEN (cess_sell_debt_coa.cess_debt_coa_open_dt >= COALESCE(cess_sell_debt_coa.coa_bind_dt, '1900-01-01'::date)) THEN cess_sell_debt_coa.cess_debt_coa_open_dt\n                ELSE cess_sell_debt_coa.coa_bind_dt\n            END, agr.cess_last_reg_dt)\n        END AS cession_dt,\n        CASE\n            WHEN (cess_buy_coa.agr_cred_id IS NOT NULL) THEN 'Y'::text\n            ELSE 'N'::text\n        END AS cession_buy_flag,\n        CASE\n            WHEN (((cess_sell_debt_coa.agr_cred_id IS NOT NULL) OR (agr.cess_last_reg_dt IS NOT NULL)) AND (cess_buy_coa.agr_cred_id IS NULL)) THEN 'Y'::text\n            ELSE 'N'::text\n        END AS cess_deferred_flag,\n    rat_first.agr_cred_rate_first_dt,\n    agr.cess_crncy_id,\n    agr.k7m_flag,\n    agr.poci_flag,\n    agr.fin_guarantee_flag,\n    agr.fin_guarantee_loan_flag,\n    agr.limit_use_end_dt,\n    agr.open_dt,\n    agr.eks_grntee_amt,\n    agr.grntee_ast_flag,\n    NULL::bigint AS crncy_id_uvdo,\n    NULL::text AS crncy_cd_uvdo,\n    NULL::text AS iso_crncy_cd_uvdo,\n    NULL::bigint AS cust_id_uvdo,\n    NULL::bigint AS letter_of_credit_type_id,\n    NULL::text AS let_of_cred_revoce_flag,\n    NULL::text AS let_of_cred_cover_flag,\n    NULL::bigint AS host_let_of_cred_cover_id,\n    NULL::numeric(38,8) AS agr_cred_start_amt,\n    agr.k7m_pl_flag,\n    NULL::bigint AS coa_cred_f26_prod_id,\n    cst.subject_area_type_id,\n    NULL::bigint AS let_of_cred_acc_scheme_id\n   FROM ((((((s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp agr\n     LEFT JOIN ( SELECT eatc.agrmnt_id AS agr_cred_id,\n            min(eatc.agrmnt_gl_acct_start_dt) AS coa_bind_dt,\n            min(c.coa_start_dt) AS cess_debt_coa_open_dt\n           FROM ((s_grnplm_as_t_didsd_010_vd_dwh.\"v_$eks_agrmnt_to_coa_3\" eatc\n             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_coa c ON ((c.coa_id = eatc.coa_id)))\n             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct glma ON ((glma.gl_main_acct_id = c.gl_main_acct_id)))\n          WHERE (substr(glma.gl_main_acct_num, 1, 7) = '4742325'::text)\n          GROUP BY eatc.agrmnt_id) cess_sell_debt_coa ON ((cess_sell_debt_coa.agr_cred_id = agr.agr_cred_id)))\n     LEFT JOIN ( SELECT c.agr_cred_id,\n            min(c.start_dt) AS cess_buy_coa_open_dt\n           FROM s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period c\n          WHERE ((((1 = 1) AND ((c.coa_num ~~ '478%'::text) OR (substr(c.coa_num, 1, 5) = ANY (ARRAY['44111'::text, '44211'::text, '44311'::text, '44411'::text, '44511'::text, '44611'::text, '44711'::text, '44811'::text, '44911'::text, '45011'::text, '45111'::text, '45211'::text, '45311'::text, '45411'::text, '45611'::text])))) AND (substr(c.meas_cd, 1, 6) = 'AGRA_L'::text)) AND (c.meas_rub > (0)::numeric))\n          GROUP BY c.agr_cred_id) cess_buy_coa ON ((cess_buy_coa.agr_cred_id = agr.agr_cred_id)))\n     LEFT JOIN ( SELECT coa_crncs_sub.agr_cred_id,\n            max(\n                CASE\n                    WHEN (coa_crncs_sub.meas_cd = 'AGRA_L001'::text) THEN coa_crncs_sub.crncy_id\n                    ELSE NULL::bigint\n                END) AS agra_l001_crncy_id,\n            max(\n                CASE\n                    WHEN (coa_crncs_sub.meas_cd = 'AGRA_L007'::text) THEN coa_crncs_sub.crncy_id\n                    ELSE NULL::bigint\n                END) AS agra_l007_crncy_id,\n            max(\n                CASE\n                    WHEN (coa_crncs_sub.meas_cd = 'AGRA_L009'::text) THEN coa_crncs_sub.crncy_id\n                    ELSE NULL::bigint\n                END) AS agra_l009_crncy_id\n           FROM ( SELECT t.agr_cred_id,\n                    t.meas_cd,\n                    t.crncy_id\n                   FROM ( SELECT a_agr_cred_coa_period.agr_cred_id,\n                            a_agr_cred_coa_period.meas_cd,\n                            a_agr_cred_coa_period.crncy_id,\n                            row_number() OVER (PARTITION BY a_agr_cred_coa_period.agr_cred_id, a_agr_cred_coa_period.meas_cd ORDER BY NULL::text) AS rn,\n                            min(a_agr_cred_coa_period.crncy_id) OVER (PARTITION BY a_agr_cred_coa_period.agr_cred_id, a_agr_cred_coa_period.meas_cd) AS mn,\n                            max(a_agr_cred_coa_period.crncy_id) OVER (PARTITION BY a_agr_cred_coa_period.agr_cred_id, a_agr_cred_coa_period.meas_cd) AS mx\n                           FROM s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period\n                          WHERE (a_agr_cred_coa_period.meas_cd = ANY (ARRAY['AGRA_L001'::text, 'AGRA_L007'::text, 'AGRA_L009'::text]))) t\n                  WHERE ((t.rn = 1) AND (t.mx = t.mn))) coa_crncs_sub\n          GROUP BY coa_crncs_sub.agr_cred_id) coa_crncy ON ((coa_crncy.agr_cred_id = agr.agr_cred_id)))\n     LEFT JOIN ( SELECT t.agr_cred_id,\n            t.optn_issue_dt\n           FROM ( SELECT aco_fst_iss_1.agr_cred_id,\n                    aco_fst_iss_1.optn_dt AS optn_issue_dt,\n                    row_number() OVER (PARTITION BY aco_fst_iss_1.agr_cred_id ORDER BY aco_fst_iss_1.optn_dt) AS rn\n                   FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn aco_fst_iss_1\n                  WHERE (((aco_fst_iss_1.issue_flag = 'Y'::text) OR (aco_fst_iss_1.move_flag = 'Y'::text)) AND (aco_fst_iss_1.optn_rub <> (0)::numeric))) t\n          WHERE (t.rn = 1)) aco_fst_iss ON ((aco_fst_iss.agr_cred_id = agr.agr_cred_id)))\n     LEFT JOIN ( SELECT rat.agrmnt_id AS agr_cred_id,\n            min(rat.loan_agrmnt_rate_start_dt) AS agr_cred_rate_first_dt\n           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate rat\n          WHERE ((rat.rate_val > (0)::numeric) AND (rat.rate_calc_rule_id = ANY (ARRAY[37004, 13104, 45804, 67904, 35204])))\n          GROUP BY rat.agrmnt_id) rat_first ON ((rat_first.agr_cred_id = agr.agr_cred_id)))\n     LEFT JOIN ( SELECT v_cust.agr_cred_id,\n            max(\n                CASE\n                    WHEN ((COALESCE(v_cust.ind_flag, 'N'::text) = 'Y'::text) AND (COALESCE(v_cust.org_flag, 'N'::text) = 'N'::text)) THEN 2\n                    WHEN (COALESCE(v_cust.bank_flag, 'N'::text) = 'Y'::text) THEN 3\n                    ELSE 1\n                END) AS subject_area_type_id\n           FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust v_cust\n          WHERE ((('now'::text)::date >= v_cust.start_dt) AND (('now'::text)::date <= v_cust.end_dt))\n          GROUP BY v_cust.agr_cred_id) cst ON ((agr.agr_cred_id = cst.agr_cred_id)))\nUNION ALL\n SELECT agr_cred.agr_cred_id,\n    NULL::bigint AS prnt_agr_cred_id,\n    agr_cred.info_system_id,\n    agr_cred.agr_num,\n    NULL::text AS grntee_agr_num,\n    agr_cred.open_dt AS signed_dt,\n    NULL::bigint AS issue_crncy_id,\n    NULL::text AS eks_overdraft_flag,\n    agr_cred.uvdo_accred_scheme_id AS agr_regls_type_id,\n    NULL::date AS issue_dt,\n    agr_cred.close_dt,\n    agr_cred.expiration_dt,\n    (agr_cred.host_agr_cred_id)::text AS host_agr_cred_id,\n    NULL::text AS host_crm_id,\n    NULL::bigint AS eks_agr_cred_type_id,\n        CASE\n            WHEN (flt.agr_cred_type_id = '-1034'::integer) THEN agr_cred.agr_cred_id\n            ELSE gen.agr_frame_id\n        END AS agr_frame_id,\n    NULL::text AS eks_rvlng_flag,\n    NULL::bigint AS issue_int_org_id,\n    NULL::text AS multi_crncy_flag,\n    NULL::smallint AS eks_old_restruct_cnt,\n    NULL::smallint AS eks_old_prolong_cnt,\n    NULL::date AS eks_contract_expiration_dt,\n    NULL::text AS diff_intst_rate_flag,\n    NULL::date AS grntee_claim_notice_dt,\n    NULL::text AS restruct_refin_default_flag,\n    NULL::date AS restruct_refin_default_dt,\n    NULL::bigint AS debt_due_acc_crncy_id,\n    NULL::bigint AS unused_limit_acc_crncy_id,\n    NULL::bigint AS grntee_acc_crncy_id,\n    'N'::text AS has_higher_flag,\n    NULL::bigint AS zero_id,\n    NULL::bigint AS four_id,\n    NULL::date AS eks_cession_dt,\n    NULL::bigint AS agr_cession_id,\n    NULL::numeric(38,8) AS cession_sell_got_cess_amt,\n    NULL::numeric(38,8) AS cession_sell_debt_cess_amt,\n    NULL::numeric(38,8) AS cession_sell_intrst_cess_amt,\n    NULL::numeric(38,8) AS cession_sell_cess_amt,\n    agr_crncy.crncy_id_eks AS crncy_id,\n    flt.agr_cred_type_id,\n    NULL::text AS agr_cred_type_cd,\n    NULL::bigint AS f26_agr_cred_type_id,\n    NULL::text AS f26_agr_cred_type_cd,\n    rvlng.rvlng_flag,\n    NULL::text AS overdraft_flag,\n    NULL::date AS cession_dt,\n    NULL::text AS cession_buy_flag,\n    NULL::text AS cess_deferred_flag,\n    NULL::date AS agr_cred_rate_first_dt,\n    NULL::bigint AS cess_crncy_id,\n    NULL::text AS k7m_flag,\n    NULL::text AS poci_flag,\n    NULL::text AS fin_guarantee_flag,\n    NULL::text AS fin_guarantee_loan_flag,\n    NULL::date AS limit_use_end_dt,\n    agr_cred.open_dt,\n    NULL::numeric(38,8) AS eks_grntee_amt,\n    NULL::text AS grntee_ast_flag,\n    agr_crncy.crncy_id AS crncy_id_uvdo,\n    agr_crncy.crncy_cd AS crncy_cd_uvdo,\n    agr_crncy.iso_crncy_cd AS iso_crncy_cd_uvdo,\n    agr_cred.payer_cust_id AS cust_id_uvdo,\n    agr_cred.agr_cred_type_id AS letter_of_credit_type_id,\n    agr_cred.revocable_accred_flag AS let_of_cred_revoce_flag,\n        CASE\n            WHEN ((gen.agr_frame_id IS NOT NULL) OR (flt.agr_cred_type_id = '-1034'::integer)) THEN 'N'::text\n            ELSE 'Y'::text\n        END AS let_of_cred_cover_flag,\n    agr_cred.host_eks_agrmnt_id AS host_let_of_cred_cover_id,\n    agr_cred.start_sum_crncy_amt AS agr_cred_start_amt,\n    NULL::text AS k7m_pl_flag,\n    NULL::bigint AS coa_cred_f26_prod_id,\n    (1)::smallint AS subject_area_type_id,\n    rvlng.accounting_scheme_id AS let_of_cred_acc_scheme_id\n   FROM ((((s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred agr_cred\n     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo flt ON ((agr_cred.agr_cred_id = flt.agr_cred_id)))\n     LEFT JOIN ( SELECT curu.crncy_id,\n            max(cure.crncy_id) AS crncy_id_eks,\n            max(COALESCE(cure.crncy_cd, '-1'::text)) AS crncy_cd,\n            max(COALESCE(cure.crncy_name, ''::text)) AS crncy_name,\n            max(curu.iso_crncy_cd) AS iso_crncy_cd,\n            max(curu.info_system_id) AS info_system_id\n           FROM (s_grnplm_as_t_didsd_029_vd_dwh.v_crncy curu\n             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_crncy cure ON ((cure.iso_crncy_cd = curu.iso_crncy_cd)))\n          GROUP BY curu.crncy_id) agr_crncy ON ((agr_crncy.crncy_id = agr_cred.crncy_id)))\n     LEFT JOIN ( SELECT t1.agr_cred_id,\n            max(t2.agr_cred_id) AS agr_frame_id\n           FROM (( SELECT \"v_agr_cred_metric_hist$$$\".agr_cred_id,\n                    max(\"v_agr_cred_metric_hist$$$\".agr_cred_metric_txt) AS frame_host_agr_cred_id\n                   FROM s_grnplm_as_t_didsd_029_vd_dwh.\"v_agr_cred_metric_hist$$$\"\n                  WHERE ((((\"v_agr_cred_metric_hist$$$\".agr_cred_metric_type_id = '-1007'::integer) AND (\"v_agr_cred_metric_hist$$$\".agr_cred_metric_txt <> '-1'::text)) AND (btrim(\"v_agr_cred_metric_hist$$$\".agr_cred_metric_txt) >= '0'::text)) AND (btrim(\"v_agr_cred_metric_hist$$$\".agr_cred_metric_txt) <= '99999999999999999999'::text))\n                  GROUP BY \"v_agr_cred_metric_hist$$$\".agr_cred_id) t1\n             JOIN ( SELECT d_agr_cred_core_uvdo.agr_cred_id,\n                    d_agr_cred_core_uvdo.host_agr_cred_id\n                   FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo\n                  WHERE (d_agr_cred_core_uvdo.agr_cred_type_id = '-1034'::integer)) t2 ON ((t1.frame_host_agr_cred_id = t2.host_agr_cred_id)))\n          GROUP BY t1.agr_cred_id) gen ON ((agr_cred.agr_cred_id = gen.agr_cred_id)))\n     LEFT JOIN ( SELECT agr.agr_cred_id,\n            agr.accounting_scheme_id,\n                CASE\n                    WHEN ((aty.host_agr_cred_type_id = (12)::numeric) AND (ttt.uvdo_ttovarlc_name = '\u041f\u0440\u043e\u0447\u0438\u0435 \u0442\u043e\u0432\u0430\u0440\u044b'::text)) THEN 'Y'::text\n                    ELSE 'N'::text\n                END AS rvlng_flag\n           FROM ((s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred agr\n             LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.\"v_$uvdo_ttovarlc\" ttt ON ((ttt.uvdo_ttovarlc_id = agr.uvdo_ttovarlc_id)))\n             LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_type aty ON ((aty.agr_cred_type_id = agr.agr_cred_type_id)))) rvlng ON ((agr_cred.agr_cred_id = rvlng.agr_cred_id)))\nUNION ALL\n SELECT core.agr_cred_id,\n    NULL::bigint AS prnt_agr_cred_id,\n    core.info_system_id,\n    coa.coa_num AS agr_num,\n    NULL::text AS grntee_agr_num,\n    coa.coa_start_dt AS signed_dt,\n    coa.crncy_id AS issue_crncy_id,\n    NULL::text AS eks_overdraft_flag,\n    NULL::bigint AS agr_regls_type_id,\n    NULL::date AS issue_dt,\n    coa.coa_end_dt AS close_dt,\n    NULL::date AS expiration_dt,\n    '-1'::text AS host_agr_cred_id,\n    NULL::text AS host_crm_id,\n    NULL::bigint AS eks_agr_cred_type_id,\n    NULL::bigint AS agr_frame_id,\n    NULL::text AS eks_rvlng_flag,\n    xref.coa_int_org_pty_id AS issue_int_org_id,\n    NULL::text AS multi_crncy_flag,\n    NULL::smallint AS eks_old_restruct_cnt,\n    NULL::smallint AS eks_old_prolong_cnt,\n    NULL::date AS eks_contract_expiration_dt,\n    NULL::text AS diff_intst_rate_flag,\n    NULL::date AS grntee_claim_notice_dt,\n    NULL::text AS restruct_refin_default_flag,\n    NULL::date AS restruct_refin_default_dt,\n    NULL::bigint AS debt_due_acc_crncy_id,\n    NULL::bigint AS unused_limit_acc_crncy_id,\n    NULL::bigint AS grntee_acc_crncy_id,\n    NULL::text AS has_higher_flag,\n    NULL::bigint AS zero_id,\n    NULL::bigint AS four_id,\n    NULL::date AS eks_cession_dt,\n    NULL::bigint AS agr_cession_id,\n    NULL::numeric(38,8) AS cession_sell_got_cess_amt,\n    NULL::numeric(38,8) AS cession_sell_debt_cess_amt,\n    NULL::numeric(38,8) AS cession_sell_intrst_cess_amt,\n    NULL::numeric(38,8) AS cession_sell_cess_amt,\n    coa.crncy_id,\n    core.agr_cred_type_id,\n    NULL::text AS agr_cred_type_cd,\n    (4)::bigint AS f26_agr_cred_type_id,\n    '1'::text AS f26_agr_cred_type_cd,\n    NULL::text AS rvlng_flag,\n    NULL::text AS overdraft_flag,\n    NULL::date AS cession_dt,\n    NULL::text AS cession_buy_flag,\n    NULL::text AS cess_deferred_flag,\n    NULL::date AS agr_cred_rate_first_dt,\n    NULL::bigint AS cess_crncy_id,\n    NULL::text AS k7m_flag,\n    NULL::text AS poci_flag,\n    NULL::text AS fin_guarantee_flag,\n    NULL::text AS fin_guarantee_loan_flag,\n    NULL::date AS limit_use_end_dt,\n    coa.coa_start_dt AS open_dt,\n    NULL::numeric(38,8) AS eks_grntee_amt,\n    NULL::text AS grntee_ast_flag,\n    NULL::bigint AS crncy_id_uvdo,\n    NULL::text AS crncy_cd_uvdo,\n    NULL::text AS iso_crncy_cd_uvdo,\n    NULL::bigint AS cust_id_uvdo,\n    NULL::bigint AS letter_of_credit_type_id,\n    NULL::text AS let_of_cred_revoce_flag,\n    NULL::text AS let_of_cred_cover_flag,\n    NULL::bigint AS host_let_of_cred_cover_id,\n    NULL::numeric(38,8) AS agr_cred_start_amt,\n    NULL::text AS k7m_pl_flag,\n    type1.agrmnt_class_val_id AS coa_cred_f26_prod_id,\n    core.subject_area_type_id,\n    NULL::bigint AS let_of_cred_acc_scheme_id\n   FROM ((((s_grnplm_vd_t_bvd_db_dmslcl.d_coa_cred_core core\n     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_coa coa ON ((core.coa_id = coa.coa_id)))\n     LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_coa_int_org_xref xref ON (((((coa.coa_id = xref.coa_id) AND (xref.coa_int_org_type_id = '-1001'::integer)) AND (coa.coa_start_dt >= xref.coa_int_org_start_dt)) AND (coa.coa_start_dt <= xref.coa_int_org_end_dt))))\n     LEFT JOIN s_grnplm_vd_t_bvd_db_dmslcl.a_crncy_s s ON ((coa.crncy_id = s.crncy_id)))\n     LEFT JOIN ( SELECT max(o.agrmnt_class_val_id) AS agrmnt_class_val_id\n           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val o\n          WHERE ((o.agrmnt_clsfctn_id = ANY (ARRAY['-1024'::integer, '-1025'::integer])) AND (upper(o.agrmnt_clsfctn_val_cd) = 'TYPE_\u041a\u041a'::text))) type1 ON ((1 = 1)));",
+    "INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp  SELECT t.agr_cred_id,\n    t.prnt_agr_cred_id,\n    t.info_system_id,\n    t.agrmnt_num,\n    t.grntee_agr_num,\n    t.acct_signed_dt,\n    t.issue_crncy_id,\n    t.eks_overdraft_flag,\n    t.agr_regls_type_id,\n    t.eks_issue_dt,\n    t.eks_transhes_issue_dt,\n    t.close_dt,\n        CASE\n            WHEN (agra_a088.agr_cred_type_id = '-1006'::integer) THEN t.acct_bal_metric_dt_arh3\n            ELSE COALESCE(t.eks_contract_expiration_dt_arh, t.acct_bal_metric_dt_arh2)\n        END AS expiration_dt,\n    t.host_agr_cred_id,\n    t.host_crm_id,\n    t.eks_agr_cred_type_id,\n    t.agr_frame_id,\n    t.eks_rvlng_flag,\n    t.issue_int_org_id,\n    t.multi_crncy_flag,\n    t.eks_old_restruct_cnt,\n    t.eks_old_prolong_cnt,\n    t.eks_contract_expiration_dt,\n    t.grntee_claim_notice_dt,\n    t.restruct_refin_default_flag,\n    t.restruct_refin_default_dt,\n    t.has_higher_flag,\n    t.zero_id,\n    t.four_id,\n    t.eks_cession_dt,\n    t.agr_cession_id,\n    t.cession_sell_got_cess_amt,\n    t.cession_sell_debt_cess_amt,\n    t.cession_sell_intrst_cess_amt,\n    (t.cession_sell_debt_cess_amt + t.cession_sell_intrst_cess_amt) AS cession_sell_cess_amt,\n    agra_a088.agr_cred_type_id,\n    agra_a088.agr_cred_type_cd,\n    agra_a086.f26_agr_cred_type_id,\n    agra_a086.f26_agr_cred_type_cd,\n        CASE\n            WHEN ((t.has_higher_flag = 'Y'::text) AND (t.eks_overdraft_flag = 'N'::text)) THEN 'N'::text\n            WHEN (t.f26_agr_cred_type_cd = '10'::text) THEN 'N'::text\n            WHEN (t.eks_overdraft_flag = 'Y'::text) THEN 'Y'::text\n            WHEN (t.agr_cred_type_cd = ANY (ARRAY['1'::text, '6'::text])) THEN COALESCE(t.eks_rvlng_flag, 'N'::text)\n            ELSE 'N'::text\n        END AS rvlng_flag,\n        CASE\n            WHEN ((t.eks_overdraft_flag = 'Y'::text) AND (COALESCE(t.f26_agr_cred_type_cd, '0'::text) <> '10'::text)) THEN 'Y'::text\n            ELSE 'N'::text\n        END AS overdraft_flag,\n    cess_last_reg.cess_last_reg_dt,\n    agr_cession.crncy_id AS cess_crncy_id,\n        CASE\n            WHEN (aaca_k7m.agr_cred_id IS NULL) THEN 'N'::text\n            ELSE 'Y'::text\n        END AS k7m_flag,\n    fgt.eks_loan_poci_flag AS poci_flag,\n        CASE\n            WHEN (fgtd.eks_fin_guarantee_type_id IS NULL) THEN 'N'::text\n            ELSE 'Y'::text\n        END AS fin_guarantee_flag,\n    fgt.eks_fin_guarantee_loan_flag AS fin_guarantee_loan_flag,\n    lmt_mtrc.limit_use_end_dt,\n    t.open_dt,\n    grntee_amt_mtrc.eks_grntee_amt,\n        CASE\n            WHEN (gaflg.agrmnt_clsfctn_val_cd = 'GUAR_PREF_022'::text) THEN 'Y'::text\n            ELSE 'N'::text\n        END AS grntee_ast_flag,\n        CASE\n            WHEN (ap_k7m.c_bool = '1'::text) THEN 'Y'::text\n            ELSE 'N'::text\n        END AS k7m_pl_flag\n   FROM (((((((((((( SELECT agr.agrmnt_id AS agr_cred_id,\n            agr.prnt_agr_cred_id,\n            agr.info_system_id,\n            agr.agrmnt_num,\n            grnt.agrmnt_txt AS grntee_agr_num,\n            agr.acct_signed_dt,\n            ac.acct_crncy_id AS issue_crncy_id,\n                CASE\n                    WHEN ((COALESCE(ife.feature_ind, 'NO'::text) = 'YES'::text) AND (fag.fin_agrmnt_type_id <> '-1007'::integer)) THEN 'Y'::text\n                    ELSE 'N'::text\n                END AS eks_overdraft_flag,\n            ass.agrmnt_class_val_id AS agr_regls_type_id,\n            iss_dt.acct_bal_metric_dt AS eks_issue_dt,\n            trn_iss_dt.trn_acct_bal_metric_dt AS eks_transhes_issue_dt,\n            agr.acct_close_dt AS close_dt,\n            agr.host_agrmnt_cd AS host_agr_cred_id,\n            crm.appl_num AS host_crm_id,\n            fag.fin_agrmnt_type_id AS eks_agr_cred_type_id,\n                CASE\n                    WHEN (fag.fin_agrmnt_type_id = ANY (ARRAY[('-1007'::integer)::bigint, ('-1024'::integer)::bigint, ('-1025'::integer)::bigint])) THEN agr.agrmnt_id\n                    ELSE COALESCE(agr_frame.related_agrmnt_id, ('-1'::integer)::bigint)\n                END AS agr_frame_id,\n            COALESCE(\n                CASE rvlng.feature_ind\n                    WHEN IS NOT DISTINCT FROM 'YES'::text THEN 'Y'::text\n                    WHEN IS NOT DISTINCT FROM 'NO'::text THEN 'N'::text\n                    ELSE NULL::text\n                END, 'N'::text) AS eks_rvlng_flag,\n            issue_io.srv_int_org_id AS issue_int_org_id,\n            NULL::unknown AS multi_crncy_flag,\n            eks_old_res.eks_old_restruct_cnt,\n            eks_old_res_sec.acct_bal_metric_cnt AS eks_old_prolong_cnt,\n            agr.contract_expiration_dt AS eks_contract_expiration_dt,\n            not_dt.acct_bal_metric_dt AS grntee_claim_notice_dt,\n                CASE aaca_rrdf.agrmnt_class_val_id\n                    WHEN IS NOT DISTINCT FROM '-1001'::integer THEN 'Y'::text\n                    WHEN IS NOT DISTINCT FROM '-1002'::integer THEN 'N'::text\n                    ELSE NULL::text\n                END AS restruct_refin_default_flag,\n            amh_rrdd.acct_bal_metric_dt AS restruct_refin_default_dt,\n            agr.has_higher_flag,\n            cust_fin_pos_type_is.zero_id,\n            cust_fin_pos_type_is.four_id,\n            cess_la.cession_dt AS eks_cession_dt,\n            cessa.related_agrmnt_id AS agr_cession_id,\n            COALESCE(cess_get.acct_bal_metric_amt, (0)::numeric) AS cession_sell_got_cess_amt,\n            COALESCE(cess_give_pri.acct_bal_metric_amt, (0)::numeric) AS cession_sell_debt_cess_amt,\n            COALESCE(cess_give_int.acct_bal_metric_amt, (0)::numeric) AS cession_sell_intrst_cess_amt,\n            agr.acct_open_dt AS open_dt,\n            fag.fin_agrmnt_type_id,\n            agra_e086_1.f26_agr_cred_type_cd,\n            agra_e088.agr_cred_type_cd,\n            agr_frame.related_agrmnt_id,\n            cessa.related_agrmnt_id AS related_agrmnt_id_cess,\n            arh3.acct_bal_metric_dt AS acct_bal_metric_dt_arh3,\n            arh2.acct_bal_metric_dt AS acct_bal_metric_dt_arh2,\n            arh.eks_contract_expiration_dt AS eks_contract_expiration_dt_arh\n           FROM (((((((((((((((((((((((((((((( SELECT agr_1.agrmnt_id,\n                    agr_1.acct_open_dt,\n                    agr_1.contract_expiration_dt,\n                    agr_1.acct_src_id,\n                    agr_1.info_system_id,\n                    agr_1.acct_close_dt,\n                    agr_1.acct_signed_dt,\n                    agr_1.agrmnt_num,\n                    agr_1.host_agrmnt_cd,\n                    agr_1.host_agrmnt_guid,\n                    agr_1.asset_liab_cd,\n                    agr_1.agrmnt_categ_id,\n                    agr_1.agrmnt_rec_start_dt,\n                    agr_1.agrmnt_rec_end_dt,\n                    agr_1.bal_sheet_cd,\n                    agr_1.acct_current_stts_type_id,\n                    agr_1.alternate_agrmnt_name,\n                    agr_1.alternate_agrmnt_signed_dt,\n                    agr_1.crm_appl_id,\n                    agr_1.eks_host_murex_agr_id,\n                    agr_1.eks_del_dt,\n                    agr_1.host_pprb_agr_dep_id,\n                    agr_1.host_pprb_agr_rko_id,\n                    agr_1.online_flag,\n                    agr_1.offer_flag,\n                    agr_1.frame_agrmnt_type_id,\n                    agr_1.eks_visible_flag,\n                    agr_1.master_info_system_id,\n                    agr_1.host_calypso_agrmnt_id,\n                    agr_1.eks_transfer_to_sol_flag,\n                    agr_1.eks_transfer_to_pprb_flag,\n                    COALESCE(prnt.prnt_agr_cred_id, agr_1.agrmnt_id) AS prnt_agr_cred_id,\n                        CASE\n                            WHEN (COALESCE(prnt.prnt_agr_cred_id, agr_1.agrmnt_id) <> agr_1.agrmnt_id) THEN 'Y'::text\n                            ELSE 'N'::text\n                        END AS has_higher_flag\n                   FROM (s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt agr_1\n                     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp prnt ON ((prnt.agr_cred_id = agr_1.agrmnt_id)))\n                  WHERE (((1 = 1) AND (agr_1.agrmnt_categ_id = 1)) AND (agr_1.agrmnt_id <> '-1'::integer))) agr\n             JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_info_system i ON ((((i.info_system_id = agr.info_system_id) AND (i.info_system_type_cd = '010'::text)) AND (i.info_system_inst_cd = '910002'::text))))\n             JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt fag ON ((fag.agrmnt_id = agr.agrmnt_id)))\n             LEFT JOIN ( SELECT a2f.agrmnt_id,\n                    max(ife_1.feature_ind) AS feature_ind\n                   FROM ((s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature a2f\n                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_feature fea ON ((((fea.feature_id = a2f.feature_id) AND (fea.feature_type_id = 4)) AND (fea.feature_clsfctn_id = '-1014'::integer))))\n                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature ife_1 ON ((ife_1.feature_id = fea.feature_id)))\n                  WHERE (a2f.acct_feature_role_id = 1)\n                  GROUP BY a2f.agrmnt_id) ife ON ((ife.agrmnt_id = agr.agrmnt_id)))\n             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist grnt ON (((grnt.agrmnt_id = agr.agrmnt_id) AND (grnt.agrmnt_text_type_id = '-1004'::integer))))\n             LEFT JOIN ( SELECT a2f.agrmnt_id,\n                    max(ife_1.feature_ind) AS feature_ind\n                   FROM ((s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature a2f\n                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_feature fea ON ((fea.feature_id = a2f.feature_id)))\n                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature ife_1 ON ((ife_1.feature_id = fea.feature_id)))\n                  WHERE (((a2f.acct_feature_role_id = 1) AND (fea.feature_type_id = 4)) AND (fea.feature_clsfctn_id = '-1015'::integer))\n                  GROUP BY a2f.agrmnt_id) rvlng ON ((rvlng.agrmnt_id = agr.agrmnt_id)))\n             LEFT JOIN ( SELECT v_agmt_agmt_class_assoc.agrmnt_id,\n                    max(v_agmt_agmt_class_assoc.agrmnt_class_val_id) AS agrmnt_class_val_id\n                   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc\n                  WHERE (v_agmt_agmt_class_assoc.agrmnt_clsfctn_id = 12)\n                  GROUP BY v_agmt_agmt_class_assoc.agrmnt_id) ass ON ((ass.agrmnt_id = agr.agrmnt_id)))\n             LEFT JOIN ( SELECT t_1.agrmnt_id,\n                    t_1.acct_crncy_id\n                   FROM ( SELECT v_acct_crncy.agrmnt_id,\n                            v_acct_crncy.acct_crncy_id,\n                            row_number() OVER (PARTITION BY v_acct_crncy.agrmnt_id ORDER BY v_acct_crncy.acct_crncy_start_dt DESC) AS rn\n                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy\n                          WHERE (v_acct_crncy.crncy_use_id = 4)) t_1\n                  WHERE (t_1.rn = 1)) ac ON ((ac.agrmnt_id = agr.agrmnt_id)))\n             LEFT JOIN ( SELECT t_1.agrmnt_id,\n                    t_1.eks_contract_expiration_dt\n                   FROM ( SELECT v_acct_renewal_hist.agrmnt_id,\n                            v_acct_renewal_hist.eks_contract_expiration_dt,\n                            row_number() OVER (PARTITION BY v_acct_renewal_hist.agrmnt_id ORDER BY v_acct_renewal_hist.contract_start_dt) AS rn\n                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist\n                          WHERE (v_acct_renewal_hist.eks_contract_expiration_dt IS NOT NULL)) t_1\n                  WHERE (t_1.rn = 1)) arh ON ((arh.agrmnt_id = agr.agrmnt_id)))\n             LEFT JOIN ( SELECT t_1.agrmnt_id,\n                    t_1.acct_bal_metric_dt\n                   FROM ( SELECT v_agrmnt_metric_hist.agrmnt_id,\n                            v_agrmnt_metric_hist.acct_bal_metric_dt,\n                            row_number() OVER (PARTITION BY v_agrmnt_metric_hist.agrmnt_id ORDER BY v_agrmnt_metric_hist.acct_bal_metric_start_dt DESC) AS rn\n                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist\n                          WHERE (((v_agrmnt_metric_hist.acct_metric_type_id = '-1046'::integer) AND (v_agrmnt_metric_hist.bal_cat_type_id = '-1'::integer)) AND (v_agrmnt_metric_hist.acct_bal_metric_dt IS NOT NULL))) t_1\n                  WHERE (t_1.rn = 1)) arh2 ON ((arh2.agrmnt_id = agr.agrmnt_id)))\n             LEFT JOIN ( SELECT t_1.agrmnt_id,\n                    t_1.acct_bal_metric_dt\n                   FROM ( SELECT v_agrmnt_metric_hist.agrmnt_id,\n                            v_agrmnt_metric_hist.acct_bal_metric_dt,\n                            row_number() OVER (PARTITION BY v_agrmnt_metric_hist.agrmnt_id ORDER BY v_agrmnt_metric_hist.acct_bal_metric_start_dt) AS rn\n                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist\n                          WHERE (((v_agrmnt_metric_hist.acct_metric_type_id = '-1046'::integer) AND (v_agrmnt_metric_hist.bal_cat_type_id = '-1'::integer)) AND (v_agrmnt_metric_hist.acct_bal_metric_dt IS NOT NULL))) t_1\n                  WHERE (t_1.rn = 1)) arh3 ON ((arh3.agrmnt_id = agr.agrmnt_id)))\n             LEFT JOIN ( SELECT t_1.related_agrmnt_id,\n                    t_1.agrmnt_id\n                   FROM ( SELECT rel.related_agrmnt_id,\n                            rel.agrmnt_id,\n                            row_number() OVER (PARTITION BY rel.agrmnt_id ORDER BY rel.agrmnt_related_start_dt, rel.related_agrmnt_id DESC) AS rn\n                           FROM (( SELECT rel_1.related_agrmnt_id,\n                                    rel_1.agrmnt_id,\n                                    rel_1.agrmnt_related_start_dt\n                                   FROM ((s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related rel_1\n                                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt fag_1 ON ((fag_1.agrmnt_id = rel_1.related_agrmnt_id)))\n                                     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core cor_1 ON ((cor_1.agr_cred_id = rel_1.related_agrmnt_id)))\n                                  WHERE ((rel_1.agrmnt_related_type_id = 1) AND (fag_1.fin_agrmnt_type_id = ANY (ARRAY[('-1024'::integer)::bigint, ('-1025'::integer)::bigint])))\n                                UNION ALL\n                                 SELECT rel_1.agrmnt_id AS related_agrmnt_id,\n                                    rel_1.related_agrmnt_id AS agrmnt_id,\n                                    rel_1.agrmnt_related_start_dt\n                                   FROM ((s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related rel_1\n                                     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core cor_1 ON ((rel_1.agrmnt_id = cor_1.agr_cred_id)))\n                                     JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt fag_1 ON ((fag_1.agrmnt_id = rel_1.agrmnt_id)))\n                                  WHERE ((rel_1.agrmnt_related_type_id = '-1004'::integer) AND (fag_1.fin_agrmnt_type_id = '-1007'::integer))) rel\n                             JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core cor ON ((cor.agr_cred_id = rel.related_agrmnt_id)))) t_1\n                  WHERE (t_1.rn = 1)) agr_frame ON (((agr_frame.agrmnt_id = agr.agrmnt_id) AND (agr.prnt_agr_cred_id = agr.agrmnt_id))))\n             LEFT JOIN ( SELECT t_1.agr_cred_id,\n                    count(1) AS eks_old_restruct_cnt\n                   FROM ( SELECT mh.agrmnt_id AS agr_cred_id,\n                            mh.acct_bal_metric_start_dt\n                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist mh\n                          WHERE (((mh.acct_metric_type_id = '-1004'::integer) AND (mh.acct_bal_metric_start_dt <> '1900-01-01'::date)) AND (mh.acct_bal_metric_cnt > 0))) t_1\n                  GROUP BY t_1.agr_cred_id) eks_old_res ON ((eks_old_res.agr_cred_id = agr.agrmnt_id)))\n             LEFT JOIN ( SELECT t_1.agrmnt_id,\n                    t_1.acct_bal_metric_cnt\n                   FROM ( SELECT eks_old_res_sec_1.agrmnt_id,\n                            eks_old_res_sec_1.acct_bal_metric_cnt,\n                            row_number() OVER (PARTITION BY eks_old_res_sec_1.agrmnt_id ORDER BY eks_old_res_sec_1.acct_bal_metric_start_dt) AS rn\n                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist eks_old_res_sec_1\n                          WHERE (((eks_old_res_sec_1.acct_metric_type_id = '-1005'::integer) AND (eks_old_res_sec_1.bal_cat_type_id = '-1'::integer)) AND (eks_old_res_sec_1.acct_bal_metric_crncy_id IS NULL))) t_1\n                  WHERE (t_1.rn = 1)) eks_old_res_sec ON ((eks_old_res_sec.agrmnt_id = agr.agrmnt_id)))\n             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist not_dt ON ((((not_dt.agrmnt_id = agr.agrmnt_id) AND (not_dt.acct_metric_type_id = '-1044'::integer)) AND (not_dt.bal_cat_type_id = '-1'::integer))))\n             LEFT JOIN ( SELECT t_1.agrmnt_id,\n                    t_1.acct_bal_metric_dt\n                   FROM ( SELECT a_m_t.agrmnt_id,\n                            a_m_t.acct_bal_metric_dt,\n                            row_number() OVER (PARTITION BY a_m_t.agrmnt_id ORDER BY a_m_t.acct_bal_metric_start_dt DESC NULLS LAST, a_m_t.acct_bal_metric_end_dt DESC NULLS LAST, a_m_t.acct_bal_metric_dt DESC NULLS LAST) AS rn\n                           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist a_m_t\n                          WHERE ((a_m_t.bal_cat_type_id = '-1'::integer) AND (a_m_t.acct_metric_type_id = '-1043'::integer))) t_1\n                  WHERE (t_1.rn = 1)) iss_dt ON ((agr.agrmnt_id = iss_dt.agrmnt_id)))\n             LEFT JOIN ( SELECT prnt.prnt_agr_cred_id,\n                    min(iss_dt_1.acct_bal_metric_dt) AS trn_acct_bal_metric_dt\n                   FROM (( SELECT t_1.agrmnt_id,\n                            t_1.acct_bal_metric_dt\n                           FROM ( SELECT a_m_t.agrmnt_id,\n                                    a_m_t.acct_bal_metric_dt,\n                                    row_number() OVER (PARTITION BY a_m_t.agrmnt_id ORDER BY a_m_t.acct_bal_metric_start_dt DESC NULLS LAST, a_m_t.acct_bal_metric_end_dt DESC NULLS LAST) AS rn\n                                   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist a_m_t\n                                  WHERE ((a_m_t.bal_cat_type_id = '-1'::integer) AND (a_m_t.acct_metric_type_id = '-1043'::integer))) t_1\n                          WHERE (t_1.rn = 1)) iss_dt_1\n                     JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp prnt ON ((prnt.prnt_agr_cred_id = iss_dt_1.agrmnt_id)))\n                  GROUP BY prnt.prnt_agr_cred_id) trn_iss_dt ON ((agr.agrmnt_id = trn_iss_dt.prnt_agr_cred_id)))\n             LEFT JOIN ( SELECT t_1.agr_cred_id,\n                    t_1.srv_int_org_id\n                   FROM ( SELECT d_agr_cred_int_org_tmp.agr_cred_id,\n                            d_agr_cred_int_org_tmp.srv_int_org_id,\n                            row_number() OVER (PARTITION BY d_agr_cred_int_org_tmp.agr_cred_id ORDER BY d_agr_cred_int_org_tmp.start_dt) AS rn\n                           FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_int_org_tmp) t_1\n                  WHERE (t_1.rn = 1)) issue_io ON ((agr.agrmnt_id = issue_io.agr_cred_id)))\n             LEFT JOIN ( SELECT t_1.agrmnt_id,\n                    t_1.appl_num\n                   FROM ( SELECT ata.agrmnt_id,\n                            a.appl_num,\n                            row_number() OVER (PARTITION BY ata.agrmnt_id ORDER BY ata.agmt_to_appl_start_dt DESC, a.appl_num) AS rn\n                           FROM (s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_appl ata\n                             JOIN s_grnplm_as_t_didsd_039_vd_dwh.v_appl a ON ((a.appl_id = ata.appl_id)))\n                          WHERE (ata.agrmnt_appl_role_id = '-1004'::integer)) t_1\n                  WHERE (t_1.rn = 1)) crm ON ((agr.agrmnt_id = crm.agrmnt_id)))\n             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc aaca_rrdf ON (((agr.agrmnt_id = aaca_rrdf.agrmnt_id) AND (aaca_rrdf.agrmnt_clsfctn_id = '-1031'::integer))))\n             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist amh_rrdd ON ((((agr.agrmnt_id = amh_rrdd.agrmnt_id) AND (amh_rrdd.bal_cat_type_id = '-1'::integer)) AND (amh_rrdd.acct_metric_type_id = '-1045'::integer))))\n             LEFT JOIN ( SELECT v_pty_class_val.info_system_id,\n                    max(\n                        CASE\n                            WHEN (v_pty_class_val.pty_class_val_cd = '0'::text) THEN v_pty_class_val.pty_class_val_id\n                            ELSE NULL::bigint\n                        END) AS zero_id,\n                    max(\n                        CASE\n                            WHEN (v_pty_class_val.pty_class_val_cd = '4'::text) THEN v_pty_class_val.pty_class_val_id\n                            ELSE NULL::bigint\n                        END) AS four_id\n                   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val\n                  WHERE ((v_pty_class_val.pty_clsfctn_id = 5) AND (v_pty_class_val.pty_class_val_cd = ANY (ARRAY['0'::text, '4'::text])))\n                  GROUP BY v_pty_class_val.info_system_id) cust_fin_pos_type_is ON ((cust_fin_pos_type_is.info_system_id = agr.info_system_id)))\n             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_loan_acct cess_la ON ((agr.agrmnt_id = cess_la.agrmnt_id)))\n             LEFT JOIN ( SELECT t_1.agrmnt_id,\n                    t_1.related_agrmnt_id\n                   FROM ( SELECT cessa_1.agrmnt_id,\n                            cessa_1.related_agrmnt_id,\n                            row_number() OVER (PARTITION BY cessa_1.agrmnt_id ORDER BY agr_cess.acct_open_dt DESC) AS rn\n                           FROM (s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related cessa_1\n                             JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt agr_cess ON ((agr_cess.agrmnt_id = cessa_1.related_agrmnt_id)))\n                          WHERE (((cessa_1.agrmnt_related_type_id = '-1009'::integer) AND (cessa_1.agrmnt_related_end_dt = '9999-12-31'::date)) AND (cessa_1.related_agrmnt_id IS NOT NULL))) t_1\n                  WHERE (t_1.rn = 1)) cessa ON ((agr.agrmnt_id = cessa.agrmnt_id)))\n             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist cess_get ON (((((agr.agrmnt_id = cess_get.agrmnt_id) AND (cess_get.acct_metric_type_id = '-1054'::integer)) AND (cess_get.bal_cat_type_id = '-1'::integer)) AND (cess_get.acct_bal_metric_end_dt = '9999-12-31'::date))))\n             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist cess_give_pri ON (((((agr.agrmnt_id = cess_give_pri.agrmnt_id) AND (cess_give_pri.acct_metric_type_id = '-1053'::integer)) AND (cess_give_pri.bal_cat_type_id = '-1'::integer)) AND (cess_give_pri.acct_bal_metric_end_dt = '9999-12-31'::date))))\n             LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist cess_give_int ON (((((agr.agrmnt_id = cess_give_int.agrmnt_id) AND (cess_give_int.acct_metric_type_id = '-1052'::integer)) AND (cess_give_int.bal_cat_type_id = '-1'::integer)) AND (cess_give_int.acct_bal_metric_end_dt = '9999-12-31'::date))))\n             LEFT JOIN s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type agra_e088 ON ((agra_e088.agr_cred_type_id = fag.fin_agrmnt_type_id)))\n             LEFT JOIN ( SELECT t_1.agr_cred_id,\n                    t_1.eks_a_f26_agr_cred_type_id\n                   FROM ( SELECT d_agr_cred_prod.agr_cred_id,\n                            d_agr_cred_prod.eks_a_f26_agr_cred_type_id,\n                            row_number() OVER (PARTITION BY d_agr_cred_prod.agr_cred_id ORDER BY d_agr_cred_prod.start_dt DESC) AS rn\n                           FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod\n                          WHERE (NOT (d_agr_cred_prod.eks_a_f26_agr_cred_type_id IN ( SELECT a_f26_agr_cred_type.f26_agr_cred_type_id\n                                   FROM s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type\n                                  WHERE (a_f26_agr_cred_type.f26_agr_cred_type_cd = '9'::text))))) t_1\n                  WHERE (t_1.rn = 1)) agr_cred_prod ON ((agr_cred_prod.agr_cred_id = agr.agrmnt_id)))\n             LEFT JOIN s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type agra_e086_1 ON ((agr_cred_prod.eks_a_f26_agr_cred_type_id = agra_e086_1.f26_agr_cred_type_id)))) t\n     LEFT JOIN ( SELECT a.f26_agr_cred_type_cd,\n            max(a.f26_agr_cred_type_id) AS f26_agr_cred_type_id\n           FROM s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type a\n          GROUP BY a.f26_agr_cred_type_cd) agra_a086 ON ((agra_a086.f26_agr_cred_type_cd =\n        CASE\n            WHEN (t.has_higher_flag = 'Y'::text) THEN '\u0422'::text\n            WHEN (t.fin_agrmnt_type_id = ANY (ARRAY[('-1007'::integer)::bigint, ('-1024'::integer)::bigint, ('-1025'::integer)::bigint, ('-1028'::integer)::bigint, ('-1031'::integer)::bigint])) THEN '\u041d\u0435 \u043e\u043f\u0440.'::text\n            WHEN (t.f26_agr_cred_type_cd = '10'::text) THEN '10'::text\n            WHEN (COALESCE(t.eks_overdraft_flag, 'N'::text) = 'Y'::text) THEN ('4'::text ||\n            CASE\n                WHEN (t.f26_agr_cred_type_cd = '4.1'::text) THEN '.1'::text\n                ELSE ''::text\n            END)\n            WHEN (t.agr_cred_type_cd = '4'::text) THEN '\u0422'::text\n            WHEN (t.agr_cred_type_cd = '2'::text) THEN '\u0413'::text\n            WHEN ((t.agr_cred_type_cd = '0'::text) AND (t.f26_agr_cred_type_cd = '7'::text)) THEN '7'::text\n            WHEN (((COALESCE(t.related_agrmnt_id, ('-1'::integer)::bigint) <> '-1'::integer) AND (t.agr_cred_type_cd = '0'::text)) AND (t.f26_agr_cred_type_cd = '6.1'::text)) THEN '6.1'::text\n            WHEN ((COALESCE(t.related_agrmnt_id, ('-1'::integer)::bigint) <> '-1'::integer) AND (t.agr_cred_type_cd = '0'::text)) THEN '5.1'::text\n            WHEN (t.agr_cred_type_cd = '0'::text) THEN '1'::text\n            WHEN (((COALESCE(t.related_agrmnt_id, ('-1'::integer)::bigint) <> '-1'::integer) AND (t.agr_cred_type_cd = '1'::text)) AND (t.eks_rvlng_flag = 'N'::text)) THEN '5.2'::text\n            WHEN ((t.agr_cred_type_cd = '1'::text) AND (t.eks_rvlng_flag = 'N'::text)) THEN ('2'::text ||\n            CASE\n                WHEN (t.f26_agr_cred_type_cd = '2.1'::text) THEN '.1'::text\n                ELSE ''::text\n            END)\n            WHEN ((COALESCE(t.related_agrmnt_id, ('-1'::integer)::bigint) <> '-1'::integer) AND (t.eks_rvlng_flag = 'Y'::text)) THEN ('5.3'::text ||\n            CASE\n                WHEN (t.f26_agr_cred_type_cd = '5.3-\u0434\u0441'::text) THEN '-\u0434\u0441'::text\n                ELSE ''::text\n            END)\n            WHEN (t.eks_rvlng_flag = 'Y'::text) THEN ('3'::text ||\n            CASE\n                WHEN (t.f26_agr_cred_type_cd = '3-\u0434\u0441'::text) THEN '-\u0434\u0441'::text\n                WHEN (t.f26_agr_cred_type_cd = '3-\u043f\u0434'::text) THEN '-\u043f\u0434'::text\n                ELSE ''::text\n            END)\n            ELSE NULL::text\n        END)))\n     LEFT JOIN ( SELECT a.agr_cred_type_cd,\n            max(a.agr_cred_type_id) AS agr_cred_type_id\n           FROM s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type a\n          GROUP BY a.agr_cred_type_cd) agra_a088 ON ((agra_a088.agr_cred_type_cd =\n        CASE\n            WHEN (t.has_higher_flag = 'Y'::text) THEN '4'::text\n            WHEN (t.f26_agr_cred_type_cd = '10'::text) THEN '-'::text\n            WHEN ((t.eks_overdraft_flag = 'Y'::text) AND (t.fin_agrmnt_type_id <> '-1007'::integer)) THEN '1'::text\n            WHEN ((t.agr_cred_type_cd = '1'::text) AND (t.f26_agr_cred_type_cd = '7'::text)) THEN '-'::text\n            ELSE COALESCE(t.agr_cred_type_cd, '-'::text)\n        END)))\n     LEFT JOIN ( SELECT d_agr_cred_prod.agr_cred_id,\n            max(d_agr_cred_prod.start_dt) AS cess_last_reg_dt\n           FROM s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod\n          WHERE (d_agr_cred_prod.eks_a_f26_agr_cred_type_id IN ( SELECT a_f26_agr_cred_type.f26_agr_cred_type_id\n                   FROM s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type\n                  WHERE (a_f26_agr_cred_type.f26_agr_cred_type_cd = '9'::text)))\n          GROUP BY d_agr_cred_prod.agr_cred_id) cess_last_reg ON ((cess_last_reg.agr_cred_id = t.agr_cred_id)))\n     LEFT JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession agr_cession ON ((agr_cession.agr_cession_id = t.related_agrmnt_id_cess)))\n     LEFT JOIN ( SELECT aaca_k7m_1.agrmnt_id AS agr_cred_id\n           FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc aaca_k7m_1\n          WHERE ((aaca_k7m_1.agrmnt_clsfctn_id = '-1038'::integer) AND (aaca_k7m_1.agrmnt_class_val_id = '-1001'::integer))\n          GROUP BY aaca_k7m_1.agrmnt_id) aaca_k7m ON ((t.agr_cred_id = aaca_k7m.agr_cred_id)))\n     LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct fgt ON ((t.agr_cred_id = fgt.agrmnt_id)))\n     LEFT JOIN ( SELECT max(fgtd_1.eks_fin_guarantee_type_id) AS eks_fin_guarantee_type_id\n           FROM s_grnplm_as_t_didsd_010_vd_dwh.\"v_$eks_fin_guarantee_type\" fgtd_1\n          WHERE (fgtd_1.eks_fin_guarantee_type_cd = 'FIN'::text)) fgtd ON ((fgt.eks_fin_guarantee_type_id = fgtd.eks_fin_guarantee_type_id)))\n     LEFT JOIN ( SELECT t_1.agrmnt_id,\n            t_1.limit_use_end_dt\n           FROM ( SELECT v_agrmnt_metric_hist.agrmnt_id,\n                    v_agrmnt_metric_hist.acct_bal_metric_dt AS limit_use_end_dt,\n                    row_number() OVER (PARTITION BY v_agrmnt_metric_hist.agrmnt_id ORDER BY v_agrmnt_metric_hist.acct_bal_metric_start_dt DESC) AS rn\n                   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist\n                  WHERE (((v_agrmnt_metric_hist.acct_metric_type_id = '-1060'::integer) AND (v_agrmnt_metric_hist.bal_cat_type_id = '-1'::integer)) AND (v_agrmnt_metric_hist.acct_bal_metric_dt IS NOT NULL))) t_1\n          WHERE (t_1.rn = 1)) lmt_mtrc ON ((t.agr_cred_id = lmt_mtrc.agrmnt_id)))\n     LEFT JOIN ( SELECT t_1.agrmnt_id,\n            t_1.eks_grntee_amt\n           FROM ( SELECT v_agrmnt_metric_hist.agrmnt_id,\n                    v_agrmnt_metric_hist.acct_bal_metric_amt AS eks_grntee_amt,\n                    row_number() OVER (PARTITION BY v_agrmnt_metric_hist.agrmnt_id ORDER BY v_agrmnt_metric_hist.acct_bal_metric_start_dt DESC) AS rn\n                   FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist\n                  WHERE (((v_agrmnt_metric_hist.acct_metric_type_id = '-1017'::integer) AND (v_agrmnt_metric_hist.bal_cat_type_id = '-1'::integer)) AND (v_agrmnt_metric_hist.acct_metric_type_id IS NOT NULL))) t_1\n          WHERE (t_1.rn = 1)) grntee_amt_mtrc ON ((t.agr_cred_id = grntee_amt_mtrc.agrmnt_id)))\n     LEFT JOIN ( SELECT t_1.agrmnt_id,\n            t_1.agrmnt_clsfctn_val_cd\n           FROM ( SELECT aa.agrmnt_id,\n                    ac.agrmnt_clsfctn_val_cd,\n                    row_number() OVER (PARTITION BY aa.agrmnt_id ORDER BY aa.agrmnt_class_start_dt DESC, ac.agmt_class_val_start_dt) AS rn\n                   FROM (s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc aa\n                     LEFT JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val ac ON (((ac.agrmnt_class_val_id = aa.agrmnt_class_val_id) AND (aa.agrmnt_clsfctn_id = ac.agrmnt_clsfctn_id))))\n                  WHERE (((1 = 1) AND (aa.agrmnt_clsfctn_id = '-1039'::integer)) AND (aa.info_system_id = 1108))) t_1\n          WHERE (t_1.rn = 1)) gaflg ON ((t.agr_cred_id = gaflg.agrmnt_id)))\n     LEFT JOIN ( SELECT ap_k7m_1.agrmnt_id AS agr_cred_id,\n            max(ap_k7m_1.c_bool) AS c_bool\n           FROM s_grnplm_as_t_didsd_010_vd_dwh.\"v_agrmnt_$$properties\" ap_k7m_1\n          WHERE ((1 = 1) AND (ap_k7m_1.c_code = 'DealType'::text))\n          GROUP BY ap_k7m_1.agrmnt_id) ap_k7m ON ((t.agr_cred_id = ap_k7m.agr_cred_id)))\n  WHERE ((1 = 1) AND (t.fin_agrmnt_type_id = ANY (ARRAY[('-1006'::integer)::bigint, ('-1007'::integer)::bigint, ('-1008'::integer)::bigint, ('-1009'::integer)::bigint, ('-1010'::integer)::bigint, ('-1024'::integer)::bigint, ('-1025'::integer)::bigint, ('-1028'::integer)::bigint, ('-1031'::integer)::bigint])));"
+  ],
+  "expected_results": [
+    {
+      "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_rdm_cust_eks2crm_mast",
+      "sources": [
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt"
+      ]
+    },
+    {
+      "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust",
+      "sources": [
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat"
+      ]
+    },
+    {
+      "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo",
+      "sources": [
+        "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$"
+      ]
+    },
+    {
+      "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp",
+      "sources": [
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa"
+      ]
+    },
+    {
+      "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp",
+      "sources": [
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old"
+      ]
+    },
+    {
+      "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred",
+      "sources": [
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_coa_int_org_xref",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_crncy",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate",
+        "s_grnplm_as_t_didsd_029_vd_dwh.v_$uvdo_ttovarlc",
+        "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred",
+        "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$",
+        "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_type",
+        "s_grnplm_as_t_didsd_029_vd_dwh.v_crncy",
+        "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period",
+        "s_grnplm_vd_t_bvd_db_dmslcl.a_crncy_s",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_coa_cred_core"
+      ]
+    },
+    {
+      "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+      "sources": [
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_fin_guarantee_type",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_$$properties",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_appl",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_feature",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_info_system",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_acct",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct",
+        "s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val",
+        "s_grnplm_as_t_didsd_039_vd_dwh.v_appl",
+        "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type",
+        "s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_int_org_tmp",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+        "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod"
+      ]
+    }
+  ],
+  "optimization_result": {
+    "optimized_prompt": "You are a precise SQL lineage extraction assistant. Your task is to extract source-to-target lineage from the given SQL statement and produce **EXACTLY ONE JSON OBJECT**, adhering to the following strict rules:\n\n- Use precisely two keys: `\"target\"` (a string) and `\"sources\"` (an array of strings).\n- For `\"target\"`:\n  * Identify the main table or view being created or updated.\n  * Specify its fully qualified name as `schema.table` (without quotes), converted to lowercase.\n- For `\"sources\"`:\n  * Include only direct base tables or views referenced in the query (ignore derived tables, CTEs, temp tables, or system tables).\n  * Format each source as a fully qualified name `schema.table`, unquoted, and in lowercase.\n  * Remove any duplicate entries.\n- Ensure your response matches the exact JSON format defined by `{format_instructions}`, including proper syntax and structure.\n- Return **ONLY** the requested JSON object, containing no additional text or comments.\n\nInput SQL: {sql_text}\n\nOutput the requested JSON object using the format described above.",
+    "initial_prompt": "You are a SQL lineage extraction expert. Extract source-to-target lineage from the SQL statement below and return **ONLY** a JSON object with two keys: \"target\" and \"sources\".\n\n**SQL Statement:**\n{sql_text}\n\n**Extraction Rules:**\n1. **Target**: The main object being created/modified (fully qualified name).\n2. **Sources**: All base tables/views referenced in the query (fully qualified names, no aliases).\n3. Strip all quotes (e.g., \"schema\".\"table\" \u2192 schema.table).\n4. Exclude derived tables, CTEs, system tables.\n5. Remove duplicates from sources.\n6. Use lowercase for all names.\n\n**Output Format:**\n{format_instructions}\n\n**Example:**\nSQL: INSERT INTO analytics.sales_summary SELECT p.category, SUM(s.amount) FROM products.raw_data p JOIN sales.transactions s ON p.id = s.product_id;\nOutput: {{\"target\": \"analytics.sales_summary\", \"sources\": [\"products.raw_data\", \"sales.transactions\"]}}\n\n**Your Response (JSON only):**",
+    "best_avg_f1": 0.41714285714285715,
+    "iterations": 4,
+    "iteration_found": 4,
+    "final_validation": [
+      {
+        "status": "SUCCESS",
+        "validation_type": "comprehensive",
+        "message": "All validations passed",
+        "result": {
+          "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_rdm_cust_eks2crm_mast",
+          "sources": [
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt"
+          ],
+          "flavor": "ansi"
+        },
+        "metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1_score": 1.0
+        }
+      },
+      {
+        "status": "SUCCESS",
+        "validation_type": "comprehensive",
+        "message": "All validations passed",
+        "result": {
+          "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust",
+          "sources": [
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat"
+          ],
+          "flavor": "ansi"
+        },
+        "metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1_score": 1.0
+        }
+      },
+      {
+        "status": "FAILED",
+        "validation_type": "sources",
+        "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}' does not match expected format for ansi: schema.table",
+        "result": {
+          "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo",
+          "sources": [
+            "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}"
+          ],
+          "flavor": "ansi"
+        }
+      },
+      {
+        "status": "FAILED",
+        "validation_type": "uniqueness",
+        "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+        "result": {
+          "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp",
+          "sources": [
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+          ],
+          "flavor": "ansi"
+        }
+      },
+      {
+        "status": "FAILED",
+        "validation_type": "uniqueness",
+        "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+        "result": {
+          "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp",
+          "sources": [
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+          ],
+          "flavor": "ansi"
+        }
+      },
+      {
+        "status": "FAILED",
+        "validation_type": "sources",
+        "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,' does not match expected format for ansi: schema.table",
+        "result": {
+          "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred",
+          "sources": [
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_eks_agrmnt_to_coa_3",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+            "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust",
+            "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo",
+            "s_grnplm_as_t_didsd_029_vd_dwh.v_crncy",
+            "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,"
+          ],
+          "flavor": "ansi"
+        }
+      },
+      {
+        "status": "SUCCESS",
+        "validation_type": "comprehensive",
+        "message": "All validations passed",
+        "result": {
+          "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+          "sources": [
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_info_system",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_feature",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related",
+            "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod",
+            "s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type",
+            "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_acct",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_appl",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_appl",
+            "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_$$properties"
+          ],
+          "flavor": "ansi"
+        },
+        "metrics": {
+          "precision": 0.9583333333333334,
+          "recall": 0.8518518518518519,
+          "f1_score": 0.9019607843137256
+        }
+      }
+    ],
+    "all_prompts": [
+      "You are a SQL lineage extraction expert. Your task is to extract source-to-target lineage from the given SQL statement and return **EXACTLY ONE JSON OBJECT** with two keys:  \n`\"target\"` (a string representing the fully qualified table name being modified or created) and  \n`\"sources\"` (an array of strings listing all base tables/views referenced in the query).  \n\n**SQL Statement:** {sql_text}\n\n1. **Target Table:** Identify the main object being created or modified (use its fully qualified name `schema.table`).  \n2. **Source Tables:** List all base tables/views directly referenced in the query (no derived tables, CTEs, or system tables).  \n   - Fully qualify each source as `schema.table`.  \n   - Remove duplicate entries.  \n   - Convert all names to lowercase.  \n3. **Formatting:**  \n   - Strip all quotes around identifiers (e.g., `\"schema\".\"table\"` becomes `schema.table`).  \n   - Ensure the final JSON adheres strictly to the format defined by `{format_instructions}`.  \n\nInput SQL:  \nINSERT INTO analytics.sales_summary \nSELECT p.category, SUM(s.amount) \nFROM products.raw_data p \nJOIN sales.transactions s ON p.id = s.product_id;\n```  \nExpected Output:  \n{\"target\": \"analytics.sales_summary\", \"sources\": [\"products.raw_data\", \"sales.transactions\"]}\n```",
+      "You are a specialized SQL lineage extraction tool. Extract source-to-target lineage from the input SQL statement and generate **ONE EXACT JSON OBJECT** following these rules:\n\n- Use exactly two keys: `\"target\"` (string) and `\"sources\"` (array of strings).\n- For `\"target\"`:\n  - Identify the primary table/view being created or modified.\n  - Provide its fully qualified name (`schema.table`) without quotes.\n  - Convert the name to lowercase.\n- For `\"sources\"`:\n  - List all base tables/views directly referenced in the query (excluding derived tables, CTEs, temporary tables, or system tables).\n  - Each entry must be fully qualified (`schema.table`), unquoted, and converted to lowercase.\n  - Eliminate duplicate entries.\n- Adhere strictly to the JSON format specified by `{format_instructions}`, ensuring correct syntax and structure.\n\nInput SQL: {sql_text}\n\nReturn only the requested JSON object, nothing else.",
+      "You are a precise SQL lineage extraction assistant. Your task is to extract source-to-target lineage from the given SQL statement and produce **EXACTLY ONE JSON OBJECT**, adhering to the following strict rules:\n\n- Use precisely two keys: `\"target\"` (a string) and `\"sources\"` (an array of strings).\n- For `\"target\"`:\n  * Identify the main table or view being created or updated.\n  * Specify its fully qualified name as `schema.table` (without quotes), converted to lowercase.\n- For `\"sources\"`:\n  * Include only direct base tables or views referenced in the query (ignore derived tables, CTEs, temp tables, or system tables).\n  * Format each source as a fully qualified name `schema.table`, unquoted, and in lowercase.\n  * Remove any duplicate entries.\n- Ensure your response matches the exact JSON format defined by `{format_instructions}`, including proper syntax and structure.\n- Return **ONLY** the requested JSON object, containing no additional text or comments.\n\nInput SQL: {sql_text}\n\nOutput the requested JSON object using the format described above.",
+      "You are a meticulous SQL lineage extraction assistant. Extract source-to-target lineage from the input SQL statement and generate **ONE EXACT JSON OBJECT**. Follow these rigid guidelines:\n\n- Use exactly two keys: `\"target\"` (as a string) and `\"sources\"` (as an array of strings).\n- For `\"target\"`:\n  * Determine the primary table or view being created or modified.\n  * Provide its fully qualified name (`schema.table`), without quotes, in lowercase.\n- For `\"sources\"`:\n  * List only direct base tables/views explicitly mentioned in the query (excluding derived tables, CTEs, temporary tables, or system tables).\n  * Each source must be formatted as a fully qualified name (`schema.table`) in lowercase.\n  * Eliminate any duplicate entries.\n- Adhere strictly to the JSON format specified by `{format_instructions}`, ensuring correct syntax and structure.\n- Produce **SOLELY** the requested JSON object\u2014no extra text, comments, or error messages allowed.\n\nInput SQL: {sql_text}\n\nReturn the requested JSON object according to the outlined format."
+    ],
+    "validation_history": [
+      [
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target 's_grnplm_vd_t_bvd_db_dmslcl.d_rdm.cust_eks2crm_mast' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_rdm.cust_eks2crm_mast",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target 's_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat.cust' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat.cust",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo",
+            "sources": [
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_crncy",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_info_system",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_acct",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_appl",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_appl",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_$$properties",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_fin_guarantee_type"
+            ],
+            "flavor": "ansi"
+          }
+        }
+      ],
+      [
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        }
+      ],
+      [
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target 's_grnplm_vd_t_bvd_db_dmslcl.d_rdm.cust_eks2crm_mast' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_rdm.cust_eks2crm_mast",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo",
+            "sources": [
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v$_eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v$_eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_crncy",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_info_system",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 0.7037037037037037,
+            "f1_score": 0.8260869565217391
+          }
+        }
+      ],
+      [
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_rdm_cust_eks2crm_mast",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo",
+            "sources": [
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v$_eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v$_eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_eks_agrmnt_to_coa_3",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_crncy",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_info_system",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_$$properties",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 0.8518518518518519,
+            "f1_score": 0.92
+          }
+        }
+      ],
+      [
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_rdm_cust_eks2crm_mast",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo",
+            "sources": [
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_eks_agrmnt_to_coa_3",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_crncy",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_info_system",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_appl",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_appl",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_$$properties"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 0.9583333333333334,
+            "recall": 0.8518518518518519,
+            "f1_score": 0.9019607843137256
+          }
+        }
+      ]
+    ],
+    "aggregated_metrics": {
+      "avg_f1": 0.41456582633053224,
+      "min_f1": 0.0,
+      "success_rate": 0.2857142857142857,
+      "num_queries": 7
+    }
+  },
+  "iteration_details": [
+    {
+      "iteration": 1,
+      "prompt": "You are a SQL lineage extraction expert. Extract source-to-target lineage from the SQL statement below and return **ONLY** a JSON object with two keys: \"target\" and \"sources\".\n\n**SQL Statement:**\n{sql_text}\n\n**Extraction Rules:**\n1. **Target**: The main object being created/modified (fully qualified name).\n2. **Sources**: All base tables/views referenced in the query (fully qualified names, no aliases).\n3. Strip all quotes (e.g., \"schema\".\"table\" \u2192 schema.table).\n4. Exclude derived tables, CTEs, system tables.\n5. Remove duplicates from sources.\n6. Use lowercase for all names.\n\n**Output Format:**\n{format_instructions}\n\n**Example:**\nSQL: INSERT INTO analytics.sales_summary SELECT p.category, SUM(s.amount) FROM products.raw_data p JOIN sales.transactions s ON p.id = s.product_id;\nOutput: {{\"target\": \"analytics.sales_summary\", \"sources\": [\"products.raw_data\", \"sales.transactions\"]}}\n\n**Your Response (JSON only):**",
+      "validation_results": [
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target 's_grnplm_vd_t_bvd_db_dmslcl.d_rdm.cust_eks2crm_mast' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_rdm.cust_eks2crm_mast",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target 's_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat.cust' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat.cust",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo",
+            "sources": [
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_crncy",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_info_system",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_acct",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_appl",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_appl",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_$$properties",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_fin_guarantee_type"
+            ],
+            "flavor": "ansi"
+          }
+        }
+      ],
+      "aggregated_metrics": {
+        "avg_f1": 0.0,
+        "min_f1": 0.0,
+        "success_rate": 0.0,
+        "num_queries": 7
+      }
+    },
+    {
+      "iteration": 2,
+      "prompt": "You are a SQL lineage extraction expert. Your task is to extract source-to-target lineage from the given SQL statement and return **EXACTLY ONE JSON OBJECT** with two keys:  \n`\"target\"` (a string representing the fully qualified table name being modified or created) and  \n`\"sources\"` (an array of strings listing all base tables/views referenced in the query).  \n\n**SQL Statement:** {sql_text}\n\n1. **Target Table:** Identify the main object being created or modified (use its fully qualified name `schema.table`).  \n2. **Source Tables:** List all base tables/views directly referenced in the query (no derived tables, CTEs, or system tables).  \n   - Fully qualify each source as `schema.table`.  \n   - Remove duplicate entries.  \n   - Convert all names to lowercase.  \n3. **Formatting:**  \n   - Strip all quotes around identifiers (e.g., `\"schema\".\"table\"` becomes `schema.table`).  \n   - Ensure the final JSON adheres strictly to the format defined by `{format_instructions}`.  \n\nInput SQL:  \nINSERT INTO analytics.sales_summary \nSELECT p.category, SUM(s.amount) \nFROM products.raw_data p \nJOIN sales.transactions s ON p.id = s.product_id;\n```  \nExpected Output:  \n{\"target\": \"analytics.sales_summary\", \"sources\": [\"products.raw_data\", \"sales.transactions\"]}\n```",
+      "validation_results": [
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target cannot be empty",
+          "result": {
+            "error": "Extractor returned error: '\"target\"'",
+            "target": "",
+            "sources": [],
+            "flavor": "ansi"
+          }
+        }
+      ],
+      "aggregated_metrics": {
+        "avg_f1": 0.0,
+        "min_f1": 0.0,
+        "success_rate": 0.0,
+        "num_queries": 7
+      }
+    },
+    {
+      "iteration": 3,
+      "prompt": "You are a specialized SQL lineage extraction tool. Extract source-to-target lineage from the input SQL statement and generate **ONE EXACT JSON OBJECT** following these rules:\n\n- Use exactly two keys: `\"target\"` (string) and `\"sources\"` (array of strings).\n- For `\"target\"`:\n  - Identify the primary table/view being created or modified.\n  - Provide its fully qualified name (`schema.table`) without quotes.\n  - Convert the name to lowercase.\n- For `\"sources\"`:\n  - List all base tables/views directly referenced in the query (excluding derived tables, CTEs, temporary tables, or system tables).\n  - Each entry must be fully qualified (`schema.table`), unquoted, and converted to lowercase.\n  - Eliminate duplicate entries.\n- Adhere strictly to the JSON format specified by `{format_instructions}`, ensuring correct syntax and structure.\n\nInput SQL: {sql_text}\n\nReturn only the requested JSON object, nothing else.",
+      "validation_results": [
+        {
+          "status": "FAILED",
+          "validation_type": "target",
+          "message": "Target 's_grnplm_vd_t_bvd_db_dmslcl.d_rdm.cust_eks2crm_mast' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_rdm.cust_eks2crm_mast",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo",
+            "sources": [
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v$_eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v$_eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_crncy",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_info_system",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 0.7037037037037037,
+            "f1_score": 0.8260869565217391
+          }
+        }
+      ],
+      "aggregated_metrics": {
+        "avg_f1": 0.2608695652173913,
+        "min_f1": 0.0,
+        "success_rate": 0.14285714285714285,
+        "num_queries": 7
+      }
+    },
+    {
+      "iteration": 4,
+      "prompt": "You are a precise SQL lineage extraction assistant. Your task is to extract source-to-target lineage from the given SQL statement and produce **EXACTLY ONE JSON OBJECT**, adhering to the following strict rules:\n\n- Use precisely two keys: `\"target\"` (a string) and `\"sources\"` (an array of strings).\n- For `\"target\"`:\n  * Identify the main table or view being created or updated.\n  * Specify its fully qualified name as `schema.table` (without quotes), converted to lowercase.\n- For `\"sources\"`:\n  * Include only direct base tables or views referenced in the query (ignore derived tables, CTEs, temp tables, or system tables).\n  * Format each source as a fully qualified name `schema.table`, unquoted, and in lowercase.\n  * Remove any duplicate entries.\n- Ensure your response matches the exact JSON format defined by `{format_instructions}`, including proper syntax and structure.\n- Return **ONLY** the requested JSON object, containing no additional text or comments.\n\nInput SQL: {sql_text}\n\nOutput the requested JSON object using the format described above.",
+      "validation_results": [
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_rdm_cust_eks2crm_mast",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo",
+            "sources": [
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v$_eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v$_eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_eks_agrmnt_to_coa_3",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_crncy",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_info_system",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_$$properties",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 0.8518518518518519,
+            "f1_score": 0.92
+          }
+        }
+      ],
+      "aggregated_metrics": {
+        "avg_f1": 0.41714285714285715,
+        "min_f1": 0.0,
+        "success_rate": 0.2857142857142857,
+        "num_queries": 7
+      }
+    },
+    {
+      "iteration": 5,
+      "prompt": "You are a meticulous SQL lineage extraction assistant. Extract source-to-target lineage from the input SQL statement and generate **ONE EXACT JSON OBJECT**. Follow these rigid guidelines:\n\n- Use exactly two keys: `\"target\"` (as a string) and `\"sources\"` (as an array of strings).\n- For `\"target\"`:\n  * Determine the primary table or view being created or modified.\n  * Provide its fully qualified name (`schema.table`), without quotes, in lowercase.\n- For `\"sources\"`:\n  * List only direct base tables/views explicitly mentioned in the query (excluding derived tables, CTEs, temporary tables, or system tables).\n  * Each source must be formatted as a fully qualified name (`schema.table`) in lowercase.\n  * Eliminate any duplicate entries.\n- Adhere strictly to the JSON format specified by `{format_instructions}`, ensuring correct syntax and structure.\n- Produce **SOLELY** the requested JSON object\u2014no extra text, comments, or error messages allowed.\n\nInput SQL: {sql_text}\n\nReturn the requested JSON object according to the outlined format.",
+      "validation_results": [
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_rdm_cust_eks2crm_mast",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo",
+            "sources": [
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$\n  ]\n}"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "uniqueness",
+          "message": "Duplicate sources found: ['s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg']",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_coa_old",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_port",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_grp_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_acct_grp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_$eks_agrmnt_to_coa_3"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "FAILED",
+          "validation_type": "sources",
+          "message": "Source 's_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,' does not match expected format for ansi: schema.table",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred",
+            "sources": [
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_eks_agrmnt_to_coa_3",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_coa",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_coa_period",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_optn",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_agrmnt_rate",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_cust",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_core_uvdo",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_crncy",
+              "s_grnplm_as_t_didsd_029_vd_dwh.v_agr_cred_metric_hist$$$,"
+            ],
+            "flavor": "ansi"
+          }
+        },
+        {
+          "status": "SUCCESS",
+          "validation_type": "comprehensive",
+          "message": "All validations passed",
+          "result": {
+            "target": "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp",
+            "sources": [
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_info_system",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_fin_agrmnt",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_ind_feature",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_text_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agmt_agmt_class_assoc",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_crncy",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_acct_renewal_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_metric_hist",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_related",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prod",
+              "s_grnplm_vd_t_bvd_db_dmslcl.a_f26_agr_cred_type",
+              "s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cession",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_term_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_pty_class_val",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_loan_acct",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_to_appl",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_appl",
+              "s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_$$properties"
+            ],
+            "flavor": "ansi"
+          },
+          "metrics": {
+            "precision": 0.9583333333333334,
+            "recall": 0.8518518518518519,
+            "f1_score": 0.9019607843137256
+          }
+        }
+      ],
+      "aggregated_metrics": {
+        "avg_f1": 0.41456582633053224,
+        "min_f1": 0.0,
+        "success_rate": 0.2857142857142857,
+        "num_queries": 7
+      }
+    }
+  ]
+}

@@ -1,8 +1,8 @@
-ddl
-"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_rdm_cust_eks2crm_mast  SELECT 1 AS a
+table_name,ddl
+d_rdm_cust_eks2crm_mast,"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_rdm_cust_eks2crm_mast  SELECT 1 AS a
    FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt agr
   WHERE (1 = 0);"
-"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust  SELECT vap.agrmnt_id AS agr_collat_id,
+d_agr_collat_cust,"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat_cust  SELECT vap.agrmnt_id AS agr_collat_id,
     vap.agrmnt_pty_start_dt AS start_dt,
     vap.agrmnt_pty_end_dt AS end_dt,
     vap.pty_id AS cust_id,
@@ -10,7 +10,7 @@ ddl
    FROM (s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_pty vap
      JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_collat ac ON ((vap.agrmnt_id = ac.agr_collat_id)))
   WHERE (vap.agrmnt_pty_role_id = 1);"
-"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo  SELECT prd.id AS agr_cred_id,
+d_agr_cred_mt_hst_uvdo,"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_mt_hst_uvdo  SELECT prd.id AS agr_cred_id,
     prd.start_dt,
     prd.end_dt,
     (h_1006.agr_cred_metric_txt)::bigint AS let_of_cred_cover_type_id,
@@ -39,7 +39,7 @@ ddl
      LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.""v_agr_cred_metric_hist$$$"" h_1006 ON ((((h_1006.agr_cred_id = prd.id) AND ((prd.start_dt >= h_1006.start_dt) AND (prd.start_dt <= h_1006.end_dt))) AND (h_1006.agr_cred_metric_type_id = '-1006'::integer))))
      LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.""v_agr_cred_metric_hist$$$"" h_1005 ON ((((h_1005.agr_cred_id = prd.id) AND ((prd.start_dt >= h_1005.start_dt) AND (prd.start_dt <= h_1005.end_dt))) AND (h_1005.agr_cred_metric_type_id = '-1005'::integer))))
      LEFT JOIN s_grnplm_as_t_didsd_029_vd_dwh.""v_agr_cred_metric_hist$$$"" h_1004 ON ((((h_1004.agr_cred_id = prd.id) AND ((prd.start_dt >= h_1004.start_dt) AND (prd.start_dt <= h_1004.end_dt))) AND (h_1004.agr_cred_metric_type_id = '-1004'::integer))));"
-"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp  SELECT 1 AS a
+d_agr_cred_coa_tmp,"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_tmp  SELECT 1 AS a
    FROM (((((((((((((((s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg stg
      CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp act)
      CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp agr)
@@ -57,7 +57,7 @@ ddl
      CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct glm)
      CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.""v_$eks_agrmnt_to_coa_3"" ae3c)
   WHERE ((1 = 0) AND (a2c.agrmnt_gl_acct_start_dt > ('now'::text)::date));"
-"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp  SELECT 1 AS a
+d_agr_cred_coa_old_tmp,"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_coa_old_tmp  SELECT 1 AS a
    FROM (((((((((((((((s_grnplm_vd_t_bvd_db_dmslcl.d_set_a2c_stg stg
      CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp act)
      CROSS JOIN s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_prnt_tmp agr)
@@ -75,7 +75,7 @@ ddl
      CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.v_gl_main_acct glm)
      CROSS JOIN s_grnplm_as_t_didsd_010_vd_dwh.""v_$eks_agrmnt_to_coa_3"" ae3c)
   WHERE ((1 = 0) AND (a2c.agrmnt_gl_acct_start_dt > ('now'::text)::date));"
-"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred  SELECT agr.agr_cred_id,
+d_agr_cred,"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred  SELECT agr.agr_cred_id,
     agr.prnt_agr_cred_id,
     agr.info_system_id,
     agr.agr_num,
@@ -424,7 +424,7 @@ UNION ALL
      LEFT JOIN ( SELECT max(o.agrmnt_class_val_id) AS agrmnt_class_val_id
            FROM s_grnplm_as_t_didsd_010_vd_dwh.v_agrmnt_class_val o
           WHERE ((o.agrmnt_clsfctn_id = ANY (ARRAY['-1024'::integer, '-1025'::integer])) AND (upper(o.agrmnt_clsfctn_val_cd) = 'TYPE_КК'::text))) type1 ON ((1 = 1)));"
-"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp  SELECT t.agr_cred_id,
+d_agr_cred_tmp,"INSERT INTO s_grnplm_vd_t_bvd_db_dmslcl.d_agr_cred_tmp  SELECT t.agr_cred_id,
     t.prnt_agr_cred_id,
     t.info_system_id,
     t.agrmnt_num,
