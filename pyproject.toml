@@ -11,4 +11,5 @@ dependencies = [
     "langchain-core>=0.3.83",
     "langchain-gigachat>=0.3.12",
     "pandas>=2.3.3",
+    "tqdm>=4.67.3",
 ]

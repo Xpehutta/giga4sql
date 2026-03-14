@@ -18,7 +18,18 @@ class LineageOutput(BaseModel):
 class SQLLineageExtractor:
     """
     SQL lineage extractor using GigaChat LLM and LangChain Expression Language (LCEL).
-    Returns only {"target": ..., "sources": [...]} .
+    Returns only {"target": ..., "sources": [...]}.
+
+    :param credentials: GigaChat API key (or set GIGACHAT_API_KEY env var)
+    :param model: GigaChat model name
+    :param verify_ssl_certs: whether to verify SSL certificates
+    :param scope: authorization scope
+    :param base_url: custom API base URL
+    :param temperature: LLM temperature
+    :param max_tokens: maximum tokens in response
+    :param template: optional custom prompt template string.
+                     Must contain {sql_text} and {format_instructions} placeholders.
+                     If None, the default prompt is used.
     """
 
     def __init__(
@@ -30,6 +41,7 @@ class SQLLineageExtractor:
         base_url: Optional[str] = None,
         temperature: float = 0.1,
         max_tokens: int = 2048,
+        template: Optional[str] = None,
     ):
         self.credentials = credentials or os.getenv("GIGACHAT_API_KEY")
         if not self.credentials:
@@ -48,9 +60,9 @@ class SQLLineageExtractor:
         # Output parser for simplified model
         self.output_parser = PydanticOutputParser(pydantic_object=LineageOutput)
 
-        # Prompt template (no extra fields asked)
-        self.prompt = PromptTemplate(
-            template="""You are a SQL lineage extraction expert. Extract source-to-target lineage from the SQL statement below and return **ONLY** a JSON object with two keys: "target" and "sources".
+        # Use custom template if provided, otherwise the default
+        if template is None:
+            template = """You are a SQL lineage extraction expert. Extract source-to-target lineage from the SQL statement below and return **ONLY** a JSON object with two keys: "target" and "sources".
 
 **SQL Statement:**
 {sql_text}
@@ -70,7 +82,10 @@ class SQLLineageExtractor:
 SQL: INSERT INTO analytics.sales_summary SELECT p.category, SUM(s.amount) FROM products.raw_data p JOIN sales.transactions s ON p.id = s.product_id;
 Output: {{"target": "analytics.sales_summary", "sources": ["products.raw_data", "sales.transactions"]}}
 
-**Your Response (JSON only):**""",
+**Your Response (JSON only):**"""
+
+        self.prompt = PromptTemplate(
+            template=template,
             input_variables=["sql_text"],
             partial_variables={"format_instructions": self.output_parser.get_format_instructions()}
         )
@@ -95,7 +110,6 @@ Output: {{"target": "analytics.sales_summary", "sources": ["products.raw_data", 
         try:
             cleaned_sql = self._clean_sql(sql_text)
             lineage_obj: LineageOutput = await self.chain.ainvoke({"sql_text": cleaned_sql})
-            # Return exactly the fields we need
             return {
                 "target": lineage_obj.target.lower(),
                 "sources": [s.lower() for s in lineage_obj.sources]
