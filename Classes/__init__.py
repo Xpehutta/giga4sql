@@ -13,9 +13,14 @@ from .model_classes import (
     SQLLineageExtractor,
 )
 
+from .helper_classes import (
+    SQLLineageResult
+)
+
 
 # Define what gets exported with "from Classes import *"
 __all__ = [
     "LineageOutput",
     "SQLLineageExtractor",
+    "SQLLineageResult"
 ]
