@@ -263,41 +263,42 @@ This workflow guides you through using the **Table Lineage (Batch)** tab of the 
      INSERT INTO target1 SELECT * FROM source1;
      INSERT INTO target2 SELECT * FROM source2;
      ```
-
-3. **Processing**  
+   ![Loading DDLs](https://github.com/Xpehutta/giga4sql/blob/main/data/Add_DDLs.png)
+   
+4. **Processing**  
    The app will:
    - Split each file into individual statements.
    - Run lineage extraction on each statement using the `SQLLineageExtractor`.
    - Display a progress bar and show any errors per statement.
    - Store results in the session.
 
-4. **View the extracted lineage overview**  
+5. **View the extracted lineage overview**  
    After processing, you’ll see a table with:
    - **File** name
    - **Statement** number
    - **Target** table (clickable button)
    - **Sources** count
 
-5. **Click on a target table**  
+6. **Click on a target table**  
    - Clicking any target button automatically fills the “Look up a table” input field.  
    - The page scrolls to the lookup section and displays:
      - How many times the table appears as **Target** and as **Source**.
      - Expandable sections listing every occurrence.
 
-6. **Explore occurrences**  
+7. **Explore occurrences**  
    - **As Target**: For each occurrence you see the source tables and the **full SQL** in a code block (with a copy button).  
    - **As Source**: For each occurrence you see the target table and the full SQL.
 
-7. **Visualise the lineage graph**  
+8. **Visualise the lineage graph**  
    Below the occurrence lists, an interactive **Graphviz graph** shows:
    - **Upstream sources** (tables that feed into the selected table) on the left.
    - **Downstream targets** (tables that use the selected table as a source) on the right.
    - The central node is your selected table.
 
-8. **Copy any SQL**  
+9. **Copy any SQL**  
    - Every displayed SQL code block has a **copy icon** in the top‑right corner – click it to copy the entire statement to your clipboard.
 
-9. **Clear the session**  
+10. **Clear the session**  
    - Use the “Clear all stored lineage results” button at the bottom to reset and start fresh.
 
 ---
