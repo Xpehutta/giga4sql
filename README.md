@@ -279,6 +279,8 @@ This workflow guides you through using the **Table Lineage (Batch)** tab of the 
    - **Target** table (clickable button)
    - **Sources** count
 
+   ![Overview table](https://github.com/Xpehutta/giga4sql/blob/main/data/Results.png)
+
 6. **Click on a target table**  
    - Clicking any target button automatically fills the “Look up a table” input field.  
    - The page scrolls to the lookup section and displays:
@@ -294,6 +296,8 @@ This workflow guides you through using the **Table Lineage (Batch)** tab of the 
    - **Upstream sources** (tables that feed into the selected table) on the left.
    - **Downstream targets** (tables that use the selected table as a source) on the right.
    - The central node is your selected table.
+
+ ![Lineage graph](https://github.com/Xpehutta/giga4sql/blob/main/data/Graph.png)
 
 9. **Copy any SQL**  
    - Every displayed SQL code block has a **copy icon** in the top‑right corner – click it to copy the entire statement to your clipboard.
